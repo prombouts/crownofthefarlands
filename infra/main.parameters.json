@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "westeurope"
+    },
+    "staticWebAppName": {
+      "value": "riskonline-swa-prombouts"
+    },
+    "staticWebAppSku": {
+      "value": "Free"
+    },
+    "webPubSubName": {
+      "value": "riskonline-wps-prombouts"
+    },
+    "webPubSubSku": {
+      "value": "Free_F1"
+    },
+    "webPubSubHub": {
+      "value": "riskonline"
+    }
+  }
+}

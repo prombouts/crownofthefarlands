@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Risk Online NL</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <h1>Risk Online (Nederlands)</h1>
+        <p class="subtitle">Multiplayer • Browser • Mobiel/iPad</p>
+      </header>
+
+      <section class="panel" id="connection-panel">
+        <h2>Verbinding</h2>
+        <div class="grid-2">
+          <label>
+            Jouw naam
+            <input id="player-name" type="text" maxlength="24" placeholder="Bijv. Robin" />
+          </label>
+          <label>
+            Kamercode
+            <input id="room-code" type="text" maxlength="20" placeholder="Bijv. risk-av-1" />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="connect-btn">Verbinden</button>
+          <span id="connection-status" class="status">Niet verbonden</span>
+        </div>
+      </section>
+
+      <section class="panel" id="lobby-panel">
+        <h2>Lobby</h2>
+        <div class="actions">
+          <button id="start-game-btn" disabled>Spel starten</button>
+          <span id="host-label" class="status">Host: onbekend</span>
+        </div>
+        <div id="players-list" class="chips"></div>
+      </section>
+
+      <section class="panel" id="game-panel">
+        <h2>Spel</h2>
+        <div id="game-meta" class="meta"></div>
+        <div id="phase-actions" class="phase-actions"></div>
+        <div id="attack-controls" class="inline-form"></div>
+        <div id="fortify-controls" class="inline-form"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Gebieden</h2>
+        <div id="territory-list" class="territory-list"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Logboek</h2>
+        <ul id="log-list" class="log-list"></ul>
+      </section>
+    </main>
+
+    <template id="territory-item-template">
+      <div class="territory-item">
+        <div class="territory-head">
+          <strong class="territory-name"></strong>
+          <span class="territory-owner"></span>
+        </div>
+        <div class="territory-body">
+          <span class="territory-armies"></span>
+          <span class="territory-neighbors"></span>
+        </div>
+      </div>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

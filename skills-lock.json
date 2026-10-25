@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "azure-deployment-preflight": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/azure-deployment-preflight/SKILL.md",
+      "computedHash": "2759103c197250041eed59020eb23a0adf8ade8a253b4d17030c76029f6476ca"
+    },
+    "azure-static-web-apps": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/azure-static-web-apps/SKILL.md",
+      "computedHash": "d8aa020f4c266800d5dce80d7ff9683d5114d42716f49776b3cc3d675b9aebc2"
+    },
+    "web-design-reviewer": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-reviewer/SKILL.md",
+      "computedHash": "4a05e32553a1dc916ee4f68f709d478c17de6b8ce184932f56f2b8646f3d4986"
+    }
+  }
+}
