@@ -8,22 +8,22 @@ function randomId(prefix = "") {
 
 module.exports = async function (context, req) {
   try {
-    const connectionString = process.env.WEB_PUBSUB_CONNECTION_STRING;
-    const hub = process.env.WEB_PUBSUB_HUB || "riskonline";
-    if (!connectionString) {
-      context.res = {
-        status: 500,
-        body: { error: "WEB_PUBSUB_CONNECTION_STRING ontbreekt." }
-      };
-      return;
-    }
-
     const requestedName = (req.query.name || "").trim();
     const room = (req.query.room || "").trim();
     if (!requestedName || !room) {
       context.res = {
         status: 400,
         body: { error: "Naam en kamercode zijn verplicht." }
+      };
+      return;
+    }
+
+    const connectionString = process.env.WEB_PUBSUB_CONNECTION_STRING;
+    const hub = process.env.WEB_PUBSUB_HUB || "riskonline";
+    if (!connectionString) {
+      context.res = {
+        status: 500,
+        body: { error: "WEB_PUBSUB_CONNECTION_STRING ontbreekt." }
       };
       return;
     }
