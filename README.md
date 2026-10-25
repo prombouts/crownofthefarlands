@@ -27,17 +27,71 @@ De multiplayer-sessie is tijdelijk en draait via **Azure Web PubSub** + **Azure 
 Je kunt de frontend lokaal openen met elke static server.
 Voor echte multiplayer is een werkende `/api/negotiate` endpoint nodig.
 
-## Azure setup (Static Web Apps + Web PubSub)
+## Azure deployment
 
-1. Maak een **Azure Web PubSub** resource.
-2. Kopieer de **connection string**.
-3. Maak een **Azure Static Web App** voor deze repository.
-4. Stel in de Static Web App configuratie de volgende Application Settings in:
-   - `WEB_PUBSUB_CONNECTION_STRING` = jouw Web PubSub connection string
-   - (optioneel) `WEB_PUBSUB_HUB` = `riskonline` (of je eigen hubnaam)
-5. Deploy.
+De Bicep-template maakt een **Free** Azure Static Web App en een **Free_F1**
+Azure Web PubSub-resource. Het gratis Web PubSub-plan heeft lagere limieten dan
+het Standard-plan. De Static Web App bevat de API in `api/`; de infrastructuur
+stelt `WEB_PUBSUB_CONNECTION_STRING` en `WEB_PUBSUB_HUB` automatisch in.
 
-De function `api/negotiate` levert daarna een client URL voor realtime verbinding.
+### Eenmalige GitHub-configuratie
+
+1. Maak de resource group en een Azure app registration/service principal.
+   Koppel een federated credential aan
+   `repo:prombouts/riskonline:ref:refs/heads/main` en geef de service principal
+   **Contributor**-rechten op alleen die resource group. Bijvoorbeeld met Azure
+   CLI (voer dit uit in Bash en vervang `<resource-group>`):
+
+   ```bash
+   RG="<resource-group>"
+   SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
+   TENANT_ID="$(az account show --query tenantId -o tsv)"
+   az group create --name "$RG" --location westeurope
+   CLIENT_ID="$(az ad app create --display-name riskonline-github-actions --query appId -o tsv)"
+   SP_OBJECT_ID="$(az ad sp create --id "$CLIENT_ID" --query id -o tsv)"
+   az ad app federated-credential create --id "$CLIENT_ID" --parameters "{
+     \"name\":\"github-main\",
+     \"issuer\":\"https://token.actions.githubusercontent.com\",
+     \"subject\":\"repo:prombouts/riskonline:ref:refs/heads/main\",
+     \"description\":\"GitHub Actions deployment from main\",
+     \"audiences\":[\"api://AzureADTokenExchange\"]
+   }"
+   az role assignment create \
+     --assignee-object-id "$SP_OBJECT_ID" \
+     --assignee-principal-type ServicePrincipal \
+     --role Contributor \
+     --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RG"
+   ```
+
+2. Voeg de volgende repository variables toe onder **Settings → Secrets and
+   variables → Actions → Variables**:
+   - `AZURE_CLIENT_ID` – de application (client) ID
+   - `AZURE_TENANT_ID` – de Azure tenant ID
+   - `AZURE_SUBSCRIPTION_ID` – de Azure subscription ID
+   - `AZURE_RG` – resource group naam
+   - `AZURE_LOCATION` – regio, bijvoorbeeld `westeurope`
+   - `STATIC_WEB_APP_NAME` – wereldwijd unieke naam voor de Static Web App
+   - `WEB_PUBSUB_NAME` – wereldwijd unieke naam voor Web PubSub
+   Use the `CLIENT_ID`, `TENANT_ID`, and `SUBSCRIPTION_ID` values from the
+   commands above.
+3. Voeg `AZURE_STATIC_WEB_APPS_API_TOKEN` als repository secret toe. Haal de
+   token op nadat de infrastructuur-workflow voor het eerst is uitgevoerd:
+
+   ```bash
+   az staticwebapp secrets list --name <static-web-app-name> --resource-group <resource-group> --query properties.apiKey -o tsv
+   ```
+
+### Deployen
+
+- **Infra:** voer `Deploy Azure infrastructure` handmatig uit via
+  **Actions → Deploy Azure infrastructure → Run workflow**. Dit maakt de
+  resource group aan indien nodig en deployt de Free-tier resources.
+- **Site en API:** `Deploy site and API` maakt een preview aan voor pull requests
+  naar `main` (en verwijdert de preview wanneer de PR sluit) en publiceert
+  automatisch naar productie bij pushes naar `main`.
+
+Pull requests vanuit forks worden overgeslagen omdat repository secrets niet
+beschikbaar zijn voor die builds.
 
 ## Multiplayer gebruik
 
@@ -57,8 +111,8 @@ De function `api/negotiate` levert daarna een client URL voor realtime verbindin
 Bestand: `infra/main.bicep`
 
 Deze template maakt:
-- Azure Static Web App
-- Azure Web PubSub
+- Azure Static Web App op de Free-tier
+- Azure Web PubSub op de Free_F1-tier
 - App settings op de Static Web App:
   - `WEB_PUBSUB_CONNECTION_STRING`
   - `WEB_PUBSUB_HUB`
@@ -77,34 +131,5 @@ az deployment group create \
 
 ## GitHub Actions
 
-### 1) Infra deploy workflow
-
-Bestand: `.github/workflows/deploy-infra.yml`
-
-Trigger: **workflow_dispatch** (handmatig)  
-Doel: Bicep-template uitrollen.
-
-Benodigd:
-- Repository variable: `AZURE_RG`
-- Repository secrets:
-  - `AZURE_CLIENT_ID`
-  - `AZURE_TENANT_ID`
-  - `AZURE_SUBSCRIPTION_ID`
-
-### 2) Site + API deploy workflow
-
-Bestand: `.github/workflows/deploy-app.yml`
-
-Triggers:
-- Push naar `main`
-- `workflow_dispatch`
-
-Doel: frontend + `/api` deployen naar Azure Static Web Apps.
-
-Benodigd:
-- Zelfde Azure OIDC secrets als hierboven
-- Repository variables:
-  - `AZURE_RG`
-  - `STATIC_WEB_APP_NAME`
-
-De workflow haalt dynamisch de deployment token van de Static Web App op via Azure CLI.
+Workflows staan in `.github/workflows/`. Azure login gebruikt OIDC zodat geen
+Azure client secret in GitHub hoeft te worden opgeslagen.

@@ -1,0 +1,37 @@
+name: Deploy Azure infrastructure
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy free-tier resources
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ vars.AZURE_RG }}
+          template: infra/main.bicep
+          parameters: >
+            location=${{ vars.AZURE_LOCATION }}
+            staticWebAppName=${{ vars.STATIC_WEB_APP_NAME }}
+            staticWebAppSku=Free
+            webPubSubName=${{ vars.WEB_PUBSUB_NAME }}
+            webPubSubSku=Free_F1
+            webPubSubHub=riskonline

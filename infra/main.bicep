@@ -9,7 +9,7 @@ param staticWebAppName string
   'Free'
   'Standard'
 ])
-param staticWebAppSku string = 'Standard'
+param staticWebAppSku string = 'Free'
 
 @description('Naam van de Azure Web PubSub resource.')
 param webPubSubName string
@@ -19,7 +19,7 @@ param webPubSubName string
   'Free_F1'
   'Standard_S1'
 ])
-param webPubSubSku string = 'Standard_S1'
+param webPubSubSku string = 'Free_F1'
 
 @description('Hubnaam gebruikt door de game.')
 param webPubSubHub string = 'riskonline'
@@ -46,10 +46,11 @@ resource webPubSub 'Microsoft.SignalRService/WebPubSub@2023-02-01' = {
   }
 }
 
-var webPubSubConnectionString = 'Endpoint=https://${webPubSub.name}.webpubsub.azure.com;AccessKey=${listKeys(webPubSub.id, webPubSub.apiVersion).primaryKey};Version=1.0;'
+var webPubSubConnectionString = 'Endpoint=https://${webPubSub.name}.webpubsub.azure.com;AccessKey=${webPubSub.listKeys().primaryKey};Version=1.0;'
 
 resource staticSiteAppSettings 'Microsoft.Web/staticSites/config@2023-12-01' = {
-  name: '${staticSite.name}/appsettings'
+  parent: staticSite
+  name: 'appsettings'
   properties: {
     WEB_PUBSUB_CONNECTION_STRING: webPubSubConnectionString
     WEB_PUBSUB_HUB: webPubSubHub

@@ -6,16 +6,16 @@
       "value": "westeurope"
     },
     "staticWebAppName": {
-      "value": "riskonline-swa-dev"
+      "value": "riskonline-swa-prombouts"
     },
     "staticWebAppSku": {
-      "value": "Standard"
+      "value": "Free"
     },
     "webPubSubName": {
-      "value": "riskonline-wps-dev"
+      "value": "riskonline-wps-prombouts"
     },
     "webPubSubSku": {
-      "value": "Standard_S1"
+      "value": "Free_F1"
     },
     "webPubSubHub": {
       "value": "riskonline"
