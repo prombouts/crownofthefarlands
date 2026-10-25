@@ -9,6 +9,7 @@ De multiplayer-sessie is tijdelijk en draait via **Azure Web PubSub** + **Azure 
 - Multiplayer met kamers (room code)
 - Werkt op desktop, mobiel en iPad (responsive)
 - Geen database of savegame nodig
+- De kaart toont iedere speler met diens kleur; versterk met een klik op je eigen gebied
 - Eenvoudige Risk-regels:
   - Versterken
   - Aanvallen met dobbelstenen
@@ -21,6 +22,14 @@ De multiplayer-sessie is tijdelijk en draait via **Azure Web PubSub** + **Azure 
 - `styles.css` – responsive styling
 - `app.js` – game logica + realtime sync
 - `api/negotiate` – Azure Function die Web PubSub toegangstoken uitgeeft
+
+## Versiebeheer
+
+GitHub Actions gebruikt Release Please en Conventional Commits. Een commit met
+`feat:` verhoogt het minor-versienummer, `fix:` verhoogt patch en
+`feat!:` of `BREAKING CHANGE:` verhoogt major. Release Please maakt hiervoor
+een release-pull-request; na samenvoegen wordt de versie bijgewerkt in
+`package.json`, als Git-tag en GitHub Release gepubliceerd en in de footer getoond.
 
 ## Lokaal draaien
 
@@ -97,8 +106,8 @@ beschikbaar zijn voor die builds.
 
 1. Open de site op meerdere apparaten.
 2. Vul voor iedere speler een naam in.
-3. De host vult een kamercode in en klikt op **Verbinden**.
-4. De host deelt de **uitnodigingslink** vanuit de lobby. Deze link vult de kamercode in en wijst de host aan.
+3. De site maakt automatisch een thematische kamercode aan (bijv. `amber-citadel-583104`). De host klikt op **Verbinden**.
+4. De host deelt de **uitnodigingslink** vanuit de lobby. Deze link vult dezelfde kamercode in en wijst de host aan.
 5. Andere spelers openen de uitnodigingslink en klikken op **Verbinden**.
 6. Alleen de host kan **Spel starten**; als de host nog niet in de kamer is, blijft deze knop uitgeschakeld.
 7. Na de start klappen **Verbinding** en **Lobby** automatisch in. Open ze opnieuw door op de sectietitel te klikken.

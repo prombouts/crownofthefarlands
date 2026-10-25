@@ -35,6 +35,31 @@ body {
   gap: 1rem;
 }
 
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 0.85rem clamp(1rem, 3vw, 2.5rem) 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.site-footer a {
+  color: var(--ink);
+  text-decoration-color: var(--brass);
+  text-underline-offset: 0.18em;
+}
+
+.site-footer a:focus-visible {
+  border-radius: 2px;
+  outline: 3px solid var(--brass);
+  outline-offset: 2px;
+}
+
 .header {
   padding: 0.2rem 0 0.5rem;
 }
@@ -86,21 +111,60 @@ h2 {
 }
 
 .map-key {
-  display: inline-flex;
-  flex: 0 0 auto;
+  display: flex;
+  flex: 0 1 auto;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.85rem;
   color: var(--muted);
   font-size: 0.85rem;
 }
 
-.map-key span {
+.map-key-armies,
+.map-player-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.map-key-swatch,
+.map-player-swatch {
   width: 0.68rem;
   height: 0.68rem;
+  flex: 0 0 auto;
   border: 2px solid var(--paper-light);
   border-radius: 50%;
-  background: var(--brass);
   box-shadow: 0 0 0 1px #a9884d;
+}
+
+.map-key-swatch--armies {
+  background: var(--brass);
+}
+
+.map-player-legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+}
+
+.map-player-entry {
+  gap: 0.32rem;
+  font-size: 0.82rem;
+}
+
+.map-player-swatch {
+  border-width: 1.5px;
+}
+
+.map-player-name {
+  display: block;
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .map-frame {
@@ -210,6 +274,21 @@ h2 {
 
 .territory-marker {
   --territory-color: #c8b783;
+}
+
+.territory-marker.is-selectable {
+  cursor: pointer;
+}
+
+.territory-marker.is-selectable:hover .territory-label-bg,
+.territory-marker.is-selectable:focus-visible .territory-label-bg {
+  stroke: #fff8e8;
+  stroke-width: 2.5;
+}
+
+.territory-marker.is-selectable:focus-visible .territory-token {
+  stroke: #fff8e8;
+  stroke-width: 3.5;
 }
 
 .territory-token {
@@ -336,6 +415,17 @@ button {
   font-size: 0.95rem;
 }
 
+input[readonly] {
+  background: #eee7d6;
+  cursor: text;
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
 button {
   border-color: var(--ink);
   background: var(--ink);
@@ -438,8 +528,16 @@ button:focus-visible {
     padding: 0.75rem;
   }
 
+  .site-footer {
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0.75rem 0.75rem 1rem;
+    text-align: center;
+  }
+
   .map-heading {
     align-items: flex-start;
+    flex-wrap: wrap;
     padding: 0.9rem 0.85rem 0.75rem;
   }
 
@@ -449,8 +547,18 @@ button:focus-visible {
   }
 
   .map-key {
+    width: 100%;
     padding-top: 0.2rem;
     font-size: 0.78rem;
+    justify-content: flex-start;
+  }
+
+  .map-player-legend {
+    justify-content: flex-start;
+  }
+
+  .map-player-name {
+    max-width: 8rem;
   }
 
   .game-map {

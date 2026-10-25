@@ -19,14 +19,20 @@
             <h2 id="map-heading">De wereldkaart</h2>
             <p>Een verre wereld van ruige kusten, droge hooglanden en lange routes.</p>
           </div>
-          <span class="map-key"><span></span> Legers</span>
+          <div class="map-key" role="group" aria-label="Kaartlegenda">
+            <span class="map-key-armies">
+              <span class="map-key-swatch map-key-swatch--armies" aria-hidden="true"></span>
+              Legers
+            </span>
+            <div id="map-player-legend" class="map-player-legend" role="list" aria-label="Spelers en kleuren"></div>
+          </div>
         </div>
         <div class="map-frame">
           <svg
             id="game-map"
             class="game-map"
             viewBox="0 0 1000 730"
-            role="img"
+            role="group"
             aria-label="Spelwereld met meerdere continenten en twaalf verbonden gebieden"
           >
             <defs>
@@ -101,8 +107,11 @@
             <input id="player-name" type="text" maxlength="24" placeholder="Bijv. Robin" />
           </label>
           <label>
-            Kamercode
-            <input id="room-code" type="text" maxlength="20" placeholder="Bijv. risk-av-1" />
+            Kamercode (automatisch)
+            <input id="room-code" type="text" maxlength="24" readonly aria-describedby="room-code-help" />
+            <small id="room-code-help" class="field-hint">
+              Automatisch aangemaakt. Deel de uitnodigingslink om anderen uit te nodigen.
+            </small>
           </label>
         </div>
         <div class="actions">
@@ -135,6 +144,11 @@
         <ul id="log-list" class="log-list"></ul>
       </section>
     </main>
+
+    <footer class="site-footer">
+      <span>Versie <span id="app-version" aria-live="polite">Laden...</span></span>
+      <span>Gebouwd door <a href="https://peterrombouts.nl">Peter Rombouts</a></span>
+    </footer>
 
     <script src="app.js"></script>
   </body>

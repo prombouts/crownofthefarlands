@@ -14,6 +14,34 @@ const TERRITORIES = [
 ];
 
 const PLAYER_COLORS = ["#e74c3c", "#f39c12", "#2ecc71", "#3498db", "#9b59b6", "#1abc9c"];
+const ROOM_CODE_ADJECTIVES = [
+  "amber",
+  "cobalt",
+  "copper",
+  "glass",
+  "jade",
+  "monsoon",
+  "ochre",
+  "sable",
+  "saltwind",
+  "saffron",
+  "windward",
+  "zephyr"
+];
+const ROOM_CODE_LANDMARKS = [
+  "basin",
+  "citadel",
+  "coast",
+  "crown",
+  "delta",
+  "frontier",
+  "harbor",
+  "island",
+  "pass",
+  "plateau",
+  "ridge",
+  "strait"
+];
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 const HEARTBEAT_MS = 5000;
@@ -37,10 +65,12 @@ const state = {
 const els = {
   playerName: document.getElementById("player-name"),
   roomCode: document.getElementById("room-code"),
+  appVersion: document.getElementById("app-version"),
   connectBtn: document.getElementById("connect-btn"),
   copyInviteBtn: document.getElementById("copy-invite-btn"),
   connectionStatus: document.getElementById("connection-status"),
   playersList: document.getElementById("players-list"),
+  mapPlayerLegend: document.getElementById("map-player-legend"),
   startGameBtn: document.getElementById("start-game-btn"),
   connectionPanel: document.getElementById("connection-panel"),
   lobbyPanel: document.getElementById("lobby-panel"),
@@ -62,6 +92,28 @@ let gameWasStarted = false;
 
 function randomId() {
   return Math.random().toString(36).slice(2, 10);
+}
+
+function generateRoomCode() {
+  const choose = (items) => items[Math.floor(Math.random() * items.length)];
+  const suffix = Math.floor(Math.random() * 900_000) + 100_000;
+  return `${choose(ROOM_CODE_ADJECTIVES)}-${choose(ROOM_CODE_LANDMARKS)}-${suffix}`;
+}
+
+async function loadAppVersion() {
+  try {
+    const response = await fetch("package.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`Versiebestand ophalen mislukt: ${response.status}`);
+
+    const packageInfo = await response.json();
+    if (typeof packageInfo.version !== "string" || !/^\d+\.\d+\.\d+$/.test(packageInfo.version)) {
+      throw new Error("package.json bevat geen geldige semantische versie.");
+    }
+    els.appVersion.textContent = `v${packageInfo.version}`;
+  } catch (error) {
+    els.appVersion.textContent = "onbekend";
+    console.error("Versie laden mislukt.", error);
+  }
 }
 
 function nowTs() {
@@ -114,6 +166,7 @@ function recomputeHost() {
 function renderPlayers() {
   const entries = sortPlayerEntries(state.players);
   els.playersList.innerHTML = "";
+  els.mapPlayerLegend.replaceChildren();
   for (const p of entries) {
     const div = document.createElement("div");
     div.className = "chip";
@@ -123,6 +176,19 @@ function renderPlayers() {
     colorDot.style.backgroundColor = p.color;
     div.append(colorDot, document.createTextNode(`${p.name}${hostMark}`));
     els.playersList.appendChild(div);
+
+    const legendEntry = document.createElement("span");
+    legendEntry.className = "map-player-entry";
+    legendEntry.setAttribute("role", "listitem");
+    const legendDot = document.createElement("span");
+    legendDot.className = "map-player-swatch";
+    legendDot.style.backgroundColor = p.color;
+    legendDot.setAttribute("aria-hidden", "true");
+    const legendName = document.createElement("span");
+    legendName.className = "map-player-name";
+    legendName.textContent = p.name;
+    legendEntry.append(legendDot, legendName);
+    els.mapPlayerLegend.appendChild(legendEntry);
   }
 }
 
@@ -151,11 +217,43 @@ function renderTerritories() {
     const owner = game?.territories?.[t.id]?.ownerId || "niemand";
     const armies = game?.territories?.[t.id]?.armies ?? 0;
     const ownerPlayer = state.players[owner];
+    const canPlaceReinforcement = Boolean(
+      game &&
+      game.phase === "versterken" &&
+      game.reinforcementsLeft > 0 &&
+      currentPlayerCanAct() &&
+      owner === state.localPlayer?.id
+    );
+    const territoryLabel = `${t.naam}: ${ownerPlayer?.name || "neutraal"}, ${armies} legers`;
     const marker = createSvgElement("g", {
-      class: `territory-marker${ownerPlayer ? " is-owned" : ""}`,
-      role: "img",
-      "aria-label": `${t.naam}: ${ownerPlayer?.name || "neutraal"}, ${armies} legers`
+      class: `territory-marker${ownerPlayer ? " is-owned" : ""}${canPlaceReinforcement ? " is-selectable" : ""}`,
+      role: canPlaceReinforcement ? "button" : "img",
+      ...(canPlaceReinforcement ? { tabindex: 0 } : {}),
+      "aria-label": canPlaceReinforcement
+        ? `${territoryLabel}. Klik om 1 leger te plaatsen.`
+        : territoryLabel
     });
+    if (canPlaceReinforcement) {
+      const placeReinforcement = () => {
+        if (
+          !state.game ||
+          state.game.phase !== "versterken" ||
+          state.game.reinforcementsLeft <= 0 ||
+          !currentPlayerCanAct() ||
+          state.game.territories[t.id]?.ownerId !== state.localPlayer?.id
+        ) {
+          return;
+        }
+        sendAction({ kind: "reinforce", territoryId: t.id });
+      };
+      marker.addEventListener("click", placeReinforcement);
+      marker.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          placeReinforcement();
+        }
+      });
+    }
     marker.style.setProperty("--territory-color", ownerPlayer?.color || "#c8b783");
     const name = createSvgElement("text", {
       class: "territory-name",
@@ -270,25 +368,9 @@ function renderActionPanels() {
     const help = document.createElement("span");
     help.className = "status";
     help.textContent = canControl
-      ? "Kies een eigen gebied om 1 leger toe te voegen."
+      ? "Klik op een eigen gebied om 1 leger te plaatsen."
       : "Wachten op de actieve speler.";
     els.phaseActions.appendChild(help);
-
-    if (canControl) {
-      const select = document.createElement("select");
-      select.id = "reinforce-territory";
-      for (const tid of ownedTerritories(state.localPlayer.id)) {
-        const option = document.createElement("option");
-        option.value = tid;
-        option.textContent = territoryById(tid).naam;
-        select.appendChild(option);
-      }
-      const btn = document.createElement("button");
-      btn.textContent = "Plaats versterking";
-      btn.onclick = () => sendAction({ kind: "reinforce", territoryId: select.value });
-      els.phaseActions.appendChild(select);
-      els.phaseActions.appendChild(btn);
-    }
   }
 
   if (phase === "aanvallen") {
@@ -750,8 +832,12 @@ function stopTimers() {
 async function connect() {
   const name = els.playerName.value.trim();
   const roomCode = els.roomCode.value.trim().toLowerCase();
-  if (!name || !roomCode) {
-    addLog("Vul naam en kamercode in.");
+  if (!name) {
+    addLog("Vul je naam in.");
+    return;
+  }
+  if (!roomCode) {
+    addLog("Er is geen kamercode beschikbaar. Vernieuw de pagina.");
     return;
   }
 
@@ -868,17 +954,16 @@ function startGame() {
 }
 
 const inviteParams = new URLSearchParams(window.location.search);
-const inviteRoomCode = inviteParams.get("room");
+const inviteRoomCode = inviteParams.get("room")?.trim().toLowerCase() || null;
 state.invitedHostId = inviteParams.get("host")?.trim() || null;
-state.invitedRoomCode = inviteRoomCode?.trim().toLowerCase() || null;
-if (inviteRoomCode) {
-  els.roomCode.value = inviteRoomCode.trim().toLowerCase();
-}
+state.invitedRoomCode = inviteRoomCode;
+els.roomCode.value = inviteRoomCode || generateRoomCode();
 
 els.connectBtn.addEventListener("click", connect);
 els.copyInviteBtn.addEventListener("click", copyInviteLink);
 els.startGameBtn.addEventListener("click", startGame);
 
+loadAppVersion();
 resetGameUi();
 renderTerritories();
 if (window.matchMedia("(max-width: 700px)").matches) {
