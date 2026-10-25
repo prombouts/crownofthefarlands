@@ -1,19 +1,20 @@
 const TERRITORIES = [
-  { id: "noordwest", naam: "Noordwest", buren: ["noord", "west"] },
-  { id: "noord", naam: "Noord", buren: ["noordwest", "noordoost", "centrum"] },
-  { id: "noordoost", naam: "Noordoost", buren: ["noord", "oost"] },
-  { id: "west", naam: "West", buren: ["noordwest", "centrum", "zuidwest"] },
-  { id: "centrum", naam: "Centrum", buren: ["noord", "west", "oost", "zuid"] },
-  { id: "oost", naam: "Oost", buren: ["noordoost", "centrum", "zuidoost"] },
-  { id: "zuidwest", naam: "Zuidwest", buren: ["west", "zuid", "verre-zuidwest"] },
-  { id: "zuid", naam: "Zuid", buren: ["centrum", "zuidwest", "zuidoost", "eiland"] },
-  { id: "zuidoost", naam: "Zuidoost", buren: ["oost", "zuid", "verre-zuidoost"] },
-  { id: "verre-zuidwest", naam: "Verre Zuidwest", buren: ["zuidwest", "eiland"] },
-  { id: "eiland", naam: "Eiland", buren: ["zuid", "verre-zuidwest", "verre-zuidoost"] },
-  { id: "verre-zuidoost", naam: "Verre Zuidoost", buren: ["zuidoost", "eiland"] }
+  { id: "noordwest", naam: "Noordwest", x: 245, y: 180, buren: ["noord", "west"] },
+  { id: "noord", naam: "Noord", x: 480, y: 115, buren: ["noordwest", "noordoost", "centrum"] },
+  { id: "noordoost", naam: "Noordoost", x: 720, y: 180, buren: ["noord", "oost"] },
+  { id: "west", naam: "West", x: 155, y: 350, buren: ["noordwest", "centrum", "zuidwest"] },
+  { id: "centrum", naam: "Centrum", x: 470, y: 320, buren: ["noord", "west", "oost", "zuid"] },
+  { id: "oost", naam: "Oost", x: 790, y: 350, buren: ["noordoost", "centrum", "zuidoost"] },
+  { id: "zuidwest", naam: "Zuidwest", x: 270, y: 500, buren: ["west", "zuid", "verre-zuidwest"] },
+  { id: "zuid", naam: "Zuid", x: 515, y: 485, buren: ["centrum", "zuidwest", "zuidoost", "eiland"] },
+  { id: "zuidoost", naam: "Zuidoost", x: 770, y: 500, buren: ["oost", "zuid", "verre-zuidoost"] },
+  { id: "verre-zuidwest", naam: "Verre Zuidwest", x: 115, y: 590, buren: ["zuidwest", "eiland"] },
+  { id: "eiland", naam: "Eiland", x: 515, y: 635, buren: ["zuid", "verre-zuidwest", "verre-zuidoost"] },
+  { id: "verre-zuidoost", naam: "Verre Zuidoost", x: 900, y: 590, buren: ["zuidoost", "eiland"] }
 ];
 
 const PLAYER_COLORS = ["#e74c3c", "#f39c12", "#2ecc71", "#3498db", "#9b59b6", "#1abc9c"];
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 const HEARTBEAT_MS = 5000;
 const PRESENCE_TIMEOUT_MS = 20000;
@@ -28,7 +29,9 @@ const state = {
   players: {},
   game: null,
   isHost: false,
-  hostId: null
+  hostId: null,
+  invitedHostId: null,
+  invitedRoomCode: null
 };
 
 const els = {
@@ -39,19 +42,23 @@ const els = {
   connectionStatus: document.getElementById("connection-status"),
   playersList: document.getElementById("players-list"),
   startGameBtn: document.getElementById("start-game-btn"),
+  connectionPanel: document.getElementById("connection-panel"),
+  lobbyPanel: document.getElementById("lobby-panel"),
   hostLabel: document.getElementById("host-label"),
   gameMeta: document.getElementById("game-meta"),
+  mapFrame: document.querySelector(".map-frame"),
   phaseActions: document.getElementById("phase-actions"),
   attackControls: document.getElementById("attack-controls"),
   fortifyControls: document.getElementById("fortify-controls"),
   territoryList: document.getElementById("territory-list"),
-  territoryTemplate: document.getElementById("territory-item-template"),
+  mapRoutes: document.getElementById("map-routes"),
   logList: document.getElementById("log-list")
 };
 
 let heartbeatTimer = null;
 let presenceTimer = null;
 let stateSyncTimer = null;
+let gameWasStarted = false;
 
 function randomId() {
   return Math.random().toString(36).slice(2, 10);
@@ -91,10 +98,17 @@ function sortPlayerEntries(playersObj) {
 
 function recomputeHost() {
   const entries = sortPlayerEntries(state.players);
-  state.hostId = entries.length ? entries[0].id : null;
+  const invitedHostId = state.roomCode === state.invitedRoomCode ? state.invitedHostId : null;
+  state.hostId = invitedHostId || (entries.length ? entries[0].id : null);
   state.isHost = state.localPlayer && state.hostId === state.localPlayer.id;
-  els.hostLabel.textContent = state.hostId ? `Host: ${playerLabel(state.hostId)}` : "Host: onbekend";
-  els.startGameBtn.disabled = !(state.isHost && !state.game && entries.length >= 2);
+  const waitingForHost = invitedHostId && !state.players[invitedHostId];
+  els.hostLabel.textContent = waitingForHost
+    ? "Wachten op lobbyhost"
+    : state.hostId
+      ? `Host: ${playerLabel(state.hostId)}`
+      : "Host: onbekend";
+  els.startGameBtn.disabled = !(state.isHost && state.connected && !state.game && entries.length >= 2);
+  els.copyInviteBtn.disabled = !(state.isHost && state.connected);
 }
 
 function renderPlayers() {
@@ -104,30 +118,101 @@ function renderPlayers() {
     const div = document.createElement("div");
     div.className = "chip";
     const hostMark = p.id === state.hostId ? " 👑" : "";
-    div.textContent = `${p.name}${hostMark}`;
+    const colorDot = document.createElement("span");
+    colorDot.className = "player-dot";
+    colorDot.style.backgroundColor = p.color;
+    div.append(colorDot, document.createTextNode(`${p.name}${hostMark}`));
     els.playersList.appendChild(div);
   }
 }
 
 function renderTerritories() {
   const game = state.game;
-  els.territoryList.innerHTML = "";
+  els.mapRoutes.replaceChildren();
+  els.territoryList.replaceChildren();
+
   for (const t of TERRITORIES) {
-    const node = els.territoryTemplate.content.firstElementChild.cloneNode(true);
+    for (const neighborId of t.buren) {
+      if (t.id.localeCompare(neighborId) >= 0) continue;
+      const neighbor = territoryById(neighborId);
+      els.mapRoutes.appendChild(
+        createSvgElement("line", {
+          class: "map-route",
+          x1: t.x,
+          y1: t.y,
+          x2: neighbor.x,
+          y2: neighbor.y
+        })
+      );
+    }
+  }
+
+  for (const t of TERRITORIES) {
     const owner = game?.territories?.[t.id]?.ownerId || "niemand";
     const armies = game?.territories?.[t.id]?.armies ?? 0;
     const ownerPlayer = state.players[owner];
-    const ownerText = ownerPlayer ? ownerPlayer.name : owner;
-    node.querySelector(".territory-name").textContent = t.naam;
-    const ownerEl = node.querySelector(".territory-owner");
-    ownerEl.textContent = ownerPlayer ? ownerText : "Onbekend";
-    if (ownerPlayer?.color) {
-      ownerEl.innerHTML = `<span class="color-dot" style="background:${ownerPlayer.color}"></span>${ownerText}`;
+    const marker = createSvgElement("g", {
+      class: `territory-marker${ownerPlayer ? " is-owned" : ""}`,
+      role: "img",
+      "aria-label": `${t.naam}: ${ownerPlayer?.name || "neutraal"}, ${armies} legers`
+    });
+    marker.style.setProperty("--territory-color", ownerPlayer?.color || "#c8b783");
+    const name = createSvgElement("text", {
+      class: "territory-name",
+      x: t.x,
+      y: t.y,
+      "text-anchor": "middle",
+      "dominant-baseline": "middle"
+    });
+    const words = t.naam.split(" ");
+    if (words.length > 1) {
+      const firstLine = createSvgElement("tspan", { x: t.x, dy: -6 });
+      firstLine.textContent = words[0];
+      const secondLine = createSvgElement("tspan", { x: t.x, dy: 12 });
+      secondLine.textContent = words.slice(1).join(" ");
+      name.append(firstLine, secondLine);
+    } else {
+      name.textContent = t.naam;
     }
-    node.querySelector(".territory-armies").textContent = `Legers: ${armies}`;
-    node.querySelector(".territory-neighbors").textContent = `Buren: ${t.buren.length}`;
-    els.territoryList.appendChild(node);
+    marker.appendChild(name);
+    els.territoryList.appendChild(marker);
+
+    const labelBounds = name.getBBox();
+    const labelBackground = createSvgElement("rect", {
+      class: "territory-label-bg",
+      x: labelBounds.x - 8,
+      y: labelBounds.y - 5,
+      width: labelBounds.width + 16,
+      height: labelBounds.height + 10,
+      rx: 7
+    });
+    marker.insertBefore(labelBackground, name);
+    const armyX = labelBounds.x + labelBounds.width + 12;
+    const armyY = labelBounds.y;
+    marker.appendChild(createSvgElement("circle", {
+      class: "territory-token",
+      cx: armyX,
+      cy: armyY,
+      r: 13
+    }));
+    const armyCount = createSvgElement("text", {
+      class: "territory-armies",
+      x: armyX,
+      y: armyY,
+      "text-anchor": "middle",
+      "dominant-baseline": "central"
+    });
+    armyCount.textContent = game ? String(armies) : "·";
+    marker.appendChild(armyCount);
   }
+}
+
+function createSvgElement(tagName, attributes = {}) {
+  const element = document.createElementNS(SVG_NS, tagName);
+  for (const [name, value] of Object.entries(attributes)) {
+    element.setAttribute(name, String(value));
+  }
+  return element;
 }
 
 function getCurrentTurnPlayer() {
@@ -363,6 +448,12 @@ function renderFortifyControls() {
 }
 
 function renderAll() {
+  const gameStarted = Boolean(state.game);
+  if (gameStarted && !gameWasStarted) {
+    els.connectionPanel.open = false;
+    els.lobbyPanel.open = false;
+  }
+  gameWasStarted = gameStarted;
   recomputeHost();
   renderPlayers();
   renderGameMeta();
@@ -722,7 +813,6 @@ async function connect() {
           }
           state.connected = true;
           els.connectionStatus.textContent = "Verbonden";
-          els.copyInviteBtn.disabled = false;
           sendPresence();
           requestState();
           startTimers();
@@ -749,9 +839,13 @@ async function connect() {
 }
 
 async function copyInviteLink() {
-  if (!state.roomCode || !state.connected) return;
+  if (!state.roomCode || !state.connected || !state.isHost || !state.localPlayer) return;
+  state.invitedHostId = state.localPlayer.id;
+  state.invitedRoomCode = state.roomCode;
+  recomputeHost();
   const inviteUrl = new URL(window.location.href);
   inviteUrl.searchParams.set("room", state.roomCode);
+  inviteUrl.searchParams.set("host", state.localPlayer.id);
   try {
     await navigator.clipboard.writeText(inviteUrl.toString());
     addLog("Uitnodigingslink gekopieerd. Deel deze met andere spelers.");
@@ -773,7 +867,10 @@ function startGame() {
   sendStateSync();
 }
 
-const inviteRoomCode = new URLSearchParams(window.location.search).get("room");
+const inviteParams = new URLSearchParams(window.location.search);
+const inviteRoomCode = inviteParams.get("room");
+state.invitedHostId = inviteParams.get("host")?.trim() || null;
+state.invitedRoomCode = inviteRoomCode?.trim().toLowerCase() || null;
 if (inviteRoomCode) {
   els.roomCode.value = inviteRoomCode.trim().toLowerCase();
 }
@@ -784,3 +881,6 @@ els.startGameBtn.addEventListener("click", startGame);
 
 resetGameUi();
 renderTerritories();
+if (window.matchMedia("(max-width: 700px)").matches) {
+  els.mapFrame.scrollLeft = (els.mapFrame.scrollWidth - els.mapFrame.clientWidth) / 2;
+}

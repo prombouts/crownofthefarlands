@@ -3,18 +3,98 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Risk Online NL</title>
+    <title>Crown of the Farlands</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="app">
       <header class="header">
-        <h1>Risk Online (Nederlands)</h1>
-        <p class="subtitle">Multiplayer • Browser • Mobiel/iPad</p>
+        <h1>Crown of the Farlands</h1>
+        <p class="subtitle">Een kaart. Twaalf gebieden. Jouw volgende zet.</p>
       </header>
 
-      <section class="panel" id="connection-panel">
-        <h2>Verbinding</h2>
+      <section class="map-panel" aria-labelledby="map-heading">
+        <div class="map-heading">
+          <div>
+            <h2 id="map-heading">De wereldkaart</h2>
+            <p>Een verre wereld van ruige kusten, droge hooglanden en lange routes.</p>
+          </div>
+          <span class="map-key"><span></span> Legers</span>
+        </div>
+        <div class="map-frame">
+          <svg
+            id="game-map"
+            class="game-map"
+            viewBox="0 0 1000 730"
+            role="img"
+            aria-label="Spelwereld met meerdere continenten en twaalf verbonden gebieden"
+          >
+            <defs>
+              <pattern id="sea-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M48 0H0V48" fill="none" stroke="#8eb0a4" stroke-opacity=".08" stroke-width="1" />
+              </pattern>
+            </defs>
+            <rect class="map-sea" width="1000" height="730" />
+            <rect class="map-grid" width="1000" height="730" fill="url(#sea-grid)" />
+            <path
+              class="map-land map-land--north"
+              d="M90 190 C112 166 145 159 177 171 L204 129 C232 110 260 111 286 126 L315 106 C347 102 375 118 391 138 C420 157 445 147 462 124 C486 100 526 100 543 124 C561 148 581 151 605 136 C632 121 662 130 675 154 L713 160 C744 169 765 192 755 211 C745 229 726 235 706 226 L681 252 C658 259 640 246 628 229 C611 209 591 210 574 224 L549 248 C528 254 511 240 500 221 C485 202 465 207 451 220 L424 246 C403 251 385 237 377 219 C367 200 348 198 331 212 L305 231 C282 237 265 221 254 203 C238 183 218 189 204 201 L183 218 C161 221 145 205 139 191 C121 200 103 202 90 190 Z"
+            />
+            <path
+              class="map-land map-land--west"
+              d="M117 322 C140 306 166 310 183 327 C200 339 218 330 230 314 C248 297 272 308 277 329 C283 350 304 356 322 347 C342 342 356 359 349 377 L331 402 C321 422 331 440 347 453 C358 471 343 486 325 478 C303 472 288 488 275 505 C259 522 237 512 226 495 C215 476 195 474 177 488 C158 502 137 488 138 468 C139 446 123 437 105 445 C85 451 69 435 77 416 L93 391 C100 371 87 357 77 345 C72 331 93 318 117 322 Z"
+            />
+            <path
+              class="map-land map-land--middle"
+              d="M405 300 C421 279 446 278 462 295 C478 309 492 300 505 285 C523 270 543 283 541 303 C539 324 557 334 577 326 C599 316 615 333 605 352 L589 376 C579 395 592 409 610 418 C626 432 615 449 594 447 C573 445 562 460 562 481 C560 500 537 505 525 488 C511 468 494 471 478 485 C459 500 440 486 443 466 C446 443 426 435 408 443 C390 449 375 433 383 415 L399 391 C407 371 392 359 376 351 C359 339 368 319 391 316 C400 315 405 308 405 300 Z"
+            />
+            <path
+              class="map-land map-land--east"
+              d="M696 304 C714 284 738 288 750 307 C763 325 779 325 794 309 C811 292 831 303 828 322 C824 343 841 356 860 354 C880 353 891 370 879 386 L860 407 C849 426 859 442 876 452 C888 469 872 485 852 477 C832 469 818 483 810 503 C802 525 779 527 768 508 C756 489 738 491 723 506 C704 523 683 509 690 487 C697 464 681 450 661 447 C641 443 637 422 653 407 C670 391 663 374 648 362 C633 346 646 327 667 330 C682 332 691 319 696 304 Z"
+            />
+            <path
+              class="map-land map-land--southwest"
+              d="M41 582 C55 557 77 548 103 552 L125 529 C151 521 177 533 190 553 L220 543 C246 547 264 564 268 584 L287 601 C296 623 279 640 258 642 L278 663 C270 683 249 688 231 675 L206 701 C183 706 168 686 162 668 L137 681 C115 683 99 668 101 648 L75 654 C53 644 47 627 59 610 C40 605 32 595 41 582 Z"
+            />
+            <path
+              class="map-land map-land--southeast"
+              d="M641 591 C649 565 673 551 699 557 L716 536 C743 524 772 535 783 554 L818 541 C845 542 861 556 864 575 L897 570 C922 579 934 603 919 622 L928 643 C919 665 897 674 878 663 L851 686 C825 691 806 673 798 655 L770 669 C747 675 729 659 723 640 L698 652 C675 651 660 635 665 615 L645 615 Z"
+            />
+            <path
+              class="map-island"
+              d="M476 632 L487 610 L503 615 L518 600 L530 616 L550 614 L559 632 L548 650 L529 657 L515 673 L498 662 L482 659 Z"
+            />
+            <path
+              class="map-land-detail"
+              d="M123 184 C160 152 199 159 226 169 S278 177 303 151 S355 126 385 148 S431 164 458 139 S509 117 535 144 S585 165 614 148 S660 155 684 181 M144 203 C181 180 210 193 236 201 S279 209 302 190 S348 171 375 192 M105 358 C139 332 164 360 190 349 S239 339 263 365 S302 386 333 369 M97 421 C129 397 157 423 182 412 S227 403 249 424 S285 446 314 431 M390 345 C423 321 449 350 475 337 S522 323 546 344 S580 361 604 346 M389 404 C421 380 448 408 476 395 S526 381 552 401 S583 420 608 403 M663 370 C693 343 723 372 746 359 S791 347 814 372 S845 393 868 380 M670 430 C700 405 731 432 754 419 S798 410 818 434 S844 450 865 439 M54 587 C82 568 112 578 134 589 S179 605 211 582 S253 572 271 594 M62 626 C99 607 128 621 151 634 S197 650 232 627 S269 618 285 636 M660 590 C691 566 723 583 748 594 S799 606 833 581 S885 579 910 600 M667 630 C698 608 725 625 749 638 S797 652 829 630 S880 624 911 643"
+            />
+            <g class="map-ridges" aria-hidden="true">
+              <path d="M294 175 L309 153 L323 175 L339 146 L357 175 L373 157 L390 178 M438 186 L453 165 L466 182 L483 151 L504 181 L519 164 L537 183 M145 403 L159 380 L173 401 L187 371 L207 403 L222 385 L239 404 M449 389 L465 367 L479 388 L496 358 L515 387 L532 369 L548 390 M744 408 L760 386 L775 407 L791 375 L811 408 L827 389 L844 410 M158 637 L174 615 L190 637 L205 607 L224 638 M788 628 L805 606 L821 629 L838 600 L858 632" />
+            </g>
+            <text class="map-sea-label" x="77" y="87">KOBALTZEE</text>
+            <text class="map-sea-label" x="812" y="126">DE VERRE STROOM</text>
+            <text class="map-sea-label" x="455" y="705">ZUIDELIJKE DOORGANG</text>
+            <g id="map-routes" aria-hidden="true"></g>
+            <text class="map-region-label" x="428" y="180" text-anchor="middle">ZOUTRUG</text>
+            <text class="map-region-label" x="214" y="410" text-anchor="middle">KOPERKUST</text>
+            <text class="map-region-label" x="493" y="388" text-anchor="middle">STOFPLATEAU</text>
+            <text class="map-region-label" x="764" y="405" text-anchor="middle">GLASLAND</text>
+            <text class="map-region-label" x="185" y="620" text-anchor="middle">VERRE WESTEN</text>
+            <text class="map-region-label" x="788" y="610" text-anchor="middle">ZUIDERLAND</text>
+            <g id="territory-list"></g>
+            <g class="compass" transform="translate(923 98)" aria-hidden="true">
+              <path d="M0 -28 L8 0 L0 28 L-8 0 Z" />
+              <text x="0" y="-38" text-anchor="middle">N</text>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <details class="panel" id="connection-panel" open>
+        <summary class="panel-summary">
+          <h2>Verbinding</h2>
+          <span id="connection-status" class="status">Niet verbonden</span>
+        </summary>
         <div class="grid-2">
           <label>
             Jouw naam
@@ -27,19 +107,20 @@
         </div>
         <div class="actions">
           <button id="connect-btn">Verbinden</button>
-          <span id="connection-status" class="status">Niet verbonden</span>
         </div>
-      </section>
+      </details>
 
-      <section class="panel" id="lobby-panel">
-        <h2>Lobby</h2>
+      <details class="panel" id="lobby-panel" open>
+        <summary class="panel-summary">
+          <h2>Lobby</h2>
+          <span id="host-label" class="status">Host: onbekend</span>
+        </summary>
         <div class="actions">
           <button id="start-game-btn" disabled>Spel starten</button>
           <button id="copy-invite-btn" disabled>Uitnodigingslink kopiëren</button>
-          <span id="host-label" class="status">Host: onbekend</span>
         </div>
         <div id="players-list" class="chips"></div>
-      </section>
+      </details>
 
       <section class="panel" id="game-panel">
         <h2>Spel</h2>
@@ -50,28 +131,10 @@
       </section>
 
       <section class="panel">
-        <h2>Gebieden</h2>
-        <div id="territory-list" class="territory-list"></div>
-      </section>
-
-      <section class="panel">
         <h2>Logboek</h2>
         <ul id="log-list" class="log-list"></ul>
       </section>
     </main>
-
-    <template id="territory-item-template">
-      <div class="territory-item">
-        <div class="territory-head">
-          <strong class="territory-name"></strong>
-          <span class="territory-owner"></span>
-        </div>
-        <div class="territory-body">
-          <span class="territory-armies"></span>
-          <span class="territory-neighbors"></span>
-        </div>
-      </div>
-    </template>
 
     <script src="app.js"></script>
   </body>

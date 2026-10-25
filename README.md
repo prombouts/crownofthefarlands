@@ -1,6 +1,6 @@
-# Risk Online (Nederlands)
+# Crown of the Farlands
 
-Een eenvoudige online versie van **Risk** voor browser, mobiel en iPad, zonder persistente opslag.
+Een eenvoudige online strategiegame voor browser, mobiel en iPad, zonder persistente opslag.
 De multiplayer-sessie is tijdelijk en draait via **Azure Web PubSub** + **Azure Static Web Apps API**.
 
 ## Features
@@ -98,9 +98,10 @@ beschikbaar zijn voor die builds.
 1. Open de site op meerdere apparaten.
 2. Vul voor iedere speler een naam in.
 3. De host vult een kamercode in en klikt op **Verbinden**.
-4. De host deelt de **uitnodigingslink** vanuit de lobby. Deze link vult de kamercode automatisch in.
+4. De host deelt de **uitnodigingslink** vanuit de lobby. Deze link vult de kamercode in en wijst de host aan.
 5. Andere spelers openen de uitnodigingslink en klikken op **Verbinden**.
-6. De host (eerste speler) klikt **Spel starten**.
+6. Alleen de host kan **Spel starten**; als de host nog niet in de kamer is, blijft deze knop uitgeschakeld.
+7. Na de start klappen **Verbinding** en **Lobby** automatisch in. Open ze opnieuw door op de sectietitel te klikken.
 
 ## Notities
 
