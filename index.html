@@ -13,7 +13,8 @@
         <p class="subtitle">Een kaart. Twaalf gebieden. Jouw volgende zet.</p>
       </header>
 
-      <section class="map-panel" aria-labelledby="map-heading">
+      <div class="battle-layout">
+        <section class="map-panel" aria-labelledby="map-heading">
         <div class="map-heading">
           <div>
             <h2 id="map-heading">De wereldkaart</h2>
@@ -94,7 +95,23 @@
             </g>
           </svg>
         </div>
-      </section>
+        </section>
+
+        <aside class="game-sidebar" aria-label="Spelbediening">
+          <section class="panel" id="game-panel">
+            <h2>Spel</h2>
+            <div id="game-meta" class="meta"></div>
+            <div id="phase-actions" class="phase-actions"></div>
+            <div id="attack-controls" class="inline-form"></div>
+            <div id="fortify-controls" class="inline-form"></div>
+          </section>
+
+          <section class="panel" aria-labelledby="game-log-heading">
+            <h2 id="game-log-heading">Logboek</h2>
+            <ul id="log-list" class="log-list"></ul>
+          </section>
+        </aside>
+      </div>
 
       <details class="panel" id="connection-panel" open>
         <summary class="panel-summary">
@@ -131,19 +148,9 @@
         <div id="players-list" class="chips"></div>
       </details>
 
-      <section class="panel" id="game-panel">
-        <h2>Spel</h2>
-        <div id="game-meta" class="meta"></div>
-        <div id="phase-actions" class="phase-actions"></div>
-        <div id="attack-controls" class="inline-form"></div>
-        <div id="fortify-controls" class="inline-form"></div>
-      </section>
-
-      <section class="panel">
-        <h2>Logboek</h2>
-        <ul id="log-list" class="log-list"></ul>
-      </section>
     </main>
+
+    <div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-relevant="additions"></div>
 
     <footer class="site-footer">
       <span>Versie <span id="app-version" aria-live="polite">Laden...</span></span>

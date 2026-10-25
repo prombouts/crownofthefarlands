@@ -2,6 +2,7 @@
 
 Een eenvoudige online strategiegame voor browser, mobiel en iPad, zonder persistente opslag.
 De multiplayer-sessie is tijdelijk en draait via **Azure Web PubSub** + **Azure Static Web Apps API**.
+Deze game is gemaakt met GitHub Copilot en GPT Luna 6.
 
 ## Features
 
@@ -10,6 +11,8 @@ De multiplayer-sessie is tijdelijk en draait via **Azure Web PubSub** + **Azure 
 - Werkt op desktop, mobiel en iPad (responsive)
 - Geen database of savegame nodig
 - De kaart toont iedere speler met diens kleur; versterk met een klik op je eigen gebied
+- Op brede schermen staan kaart, spelbediening en logboek naast elkaar
+- Toastmeldingen houden spelers op de hoogte van acties, beurten en verbindingsproblemen
 - Eenvoudige Risk-regels:
   - Versterken
   - Aanvallen met dobbelstenen

@@ -63,12 +63,14 @@ const state = {
 };
 
 const els = {
+  app: document.querySelector(".app"),
   playerName: document.getElementById("player-name"),
   roomCode: document.getElementById("room-code"),
   appVersion: document.getElementById("app-version"),
   connectBtn: document.getElementById("connect-btn"),
   copyInviteBtn: document.getElementById("copy-invite-btn"),
   connectionStatus: document.getElementById("connection-status"),
+  toastRegion: document.getElementById("toast-region"),
   playersList: document.getElementById("players-list"),
   mapPlayerLegend: document.getElementById("map-player-legend"),
   startGameBtn: document.getElementById("start-game-btn"),
@@ -89,6 +91,7 @@ let heartbeatTimer = null;
 let presenceTimer = null;
 let stateSyncTimer = null;
 let gameWasStarted = false;
+const toastTimers = new WeakMap();
 
 function randomId() {
   return Math.random().toString(36).slice(2, 10);
@@ -120,6 +123,36 @@ function nowTs() {
   return Date.now();
 }
 
+function dismissToast(toast) {
+  const timer = toastTimers.get(toast);
+  if (timer) window.clearTimeout(timer);
+  toastTimers.delete(toast);
+  toast.remove();
+}
+
+function showToast(message, type = "info") {
+  const toast = document.createElement("div");
+  toast.className = `toast toast--${type}`;
+
+  const text = document.createElement("span");
+  text.className = "toast-message";
+  text.textContent = message;
+
+  const closeButton = document.createElement("button");
+  closeButton.className = "toast-close";
+  closeButton.type = "button";
+  closeButton.setAttribute("aria-label", "Melding sluiten");
+  closeButton.textContent = "×";
+  closeButton.addEventListener("click", () => dismissToast(toast));
+
+  toast.append(text, closeButton);
+  els.toastRegion.appendChild(toast);
+  while (els.toastRegion.children.length > 3) {
+    dismissToast(els.toastRegion.firstElementChild);
+  }
+  toastTimers.set(toast, window.setTimeout(() => dismissToast(toast), 6000));
+}
+
 function resetGameUi() {
   els.gameMeta.textContent = "Nog geen spel gestart.";
   els.phaseActions.innerHTML = "";
@@ -128,6 +161,10 @@ function resetGameUi() {
 }
 
 function addLog(text) {
+  const isError = /mislukt|fout|onverwacht|vul je|geen kamercode|minimaal/i.test(text);
+  const isSuccess = /gekopieerd/i.test(text);
+  showToast(text, isError ? "error" : isSuccess ? "success" : "info");
+
   const li = document.createElement("li");
   li.textContent = text;
   els.logList.prepend(li);
@@ -376,23 +413,33 @@ function renderActionPanels() {
   if (phase === "aanvallen") {
     if (canControl) {
       renderAttackControls();
+    } else {
+      const waiting = document.createElement("span");
+      waiting.className = "status";
+      waiting.textContent = "Wachten op de actieve speler.";
+      els.phaseActions.appendChild(waiting);
     }
     const endAttack = document.createElement("button");
     endAttack.textContent = "Aanvallen beëindigen";
     endAttack.disabled = !canControl;
     endAttack.onclick = () => sendAction({ kind: "end_attack_phase" });
-    els.phaseActions.appendChild(endAttack);
+    els.attackControls.appendChild(endAttack);
   }
 
   if (phase === "verplaatsen") {
     if (canControl) {
       renderFortifyControls();
+    } else {
+      const waiting = document.createElement("span");
+      waiting.className = "status";
+      waiting.textContent = "Wachten op de actieve speler.";
+      els.phaseActions.appendChild(waiting);
     }
     const endTurn = document.createElement("button");
     endTurn.textContent = "Beurt beëindigen";
     endTurn.disabled = !canControl;
     endTurn.onclick = () => sendAction({ kind: "end_turn" });
-    els.phaseActions.appendChild(endTurn);
+    els.fortifyControls.appendChild(endTurn);
   }
 }
 
@@ -413,6 +460,7 @@ function renderAttackControls() {
   }
 
   const fromSelect = document.createElement("select");
+  fromSelect.setAttribute("aria-label", "Aanvallen vanuit");
   for (const id of fromCandidates) {
     const o = document.createElement("option");
     o.value = id;
@@ -421,7 +469,9 @@ function renderAttackControls() {
   }
 
   const toSelect = document.createElement("select");
+  toSelect.setAttribute("aria-label", "Aanvallen naar");
   const diceSelect = document.createElement("select");
+  diceSelect.setAttribute("aria-label", "Aantal dobbelstenen");
   [1, 2, 3].forEach((d) => {
     const o = document.createElement("option");
     o.value = String(d);
@@ -485,9 +535,12 @@ function renderFortifyControls() {
   const fromSelect = document.createElement("select");
   const toSelect = document.createElement("select");
   const countInput = document.createElement("input");
+  fromSelect.setAttribute("aria-label", "Verplaatsen vanuit");
+  toSelect.setAttribute("aria-label", "Verplaatsen naar");
   countInput.type = "number";
   countInput.min = "1";
   countInput.value = "1";
+  countInput.setAttribute("aria-label", "Aantal legers");
 
   for (const id of fromCandidates) {
     const o = document.createElement("option");
@@ -531,6 +584,7 @@ function renderFortifyControls() {
 
 function renderAll() {
   const gameStarted = Boolean(state.game);
+  els.app.classList.toggle("is-playing", gameStarted);
   if (gameStarted && !gameWasStarted) {
     els.connectionPanel.open = false;
     els.lobbyPanel.open = false;
@@ -665,6 +719,21 @@ function appendGameLog(game, message) {
   }
 }
 
+function notifyGameUpdate(previousGame, nextGame) {
+  const nextLog = Array.isArray(nextGame?.log) ? nextGame.log : [];
+  const previousLog = Array.isArray(previousGame?.log) ? previousGame.log : [];
+  const latestMessage = nextLog.at(-1);
+  if (
+    typeof latestMessage !== "string" ||
+    (previousGame && nextLog.length <= previousLog.length && latestMessage === previousLog.at(-1))
+  ) {
+    return;
+  }
+
+  const type = /spel gestart|verovert|wint het spel/i.test(latestMessage) ? "success" : "info";
+  showToast(latestMessage, type);
+}
+
 function ensureHostActionEnvelope(message) {
   return state.isHost && message?.type === "action" && message?.actorId;
 }
@@ -673,7 +742,8 @@ function applyHostAction(message) {
   if (!ensureHostActionEnvelope(message) || !state.game || state.game.winnerId) return;
   const action = message.action;
   const actorId = message.actorId;
-  const game = cloneGame(state.game);
+  const previousGame = state.game;
+  const game = cloneGame(previousGame);
   const turnPlayer = game.turnOrder[game.turnIndex];
   if (actorId !== turnPlayer) return;
 
@@ -764,6 +834,7 @@ function applyHostAction(message) {
 
   if (changed) {
     state.game = game;
+    notifyGameUpdate(previousGame, game);
     renderAll();
     renderLog();
     sendStateSync();
@@ -801,7 +872,9 @@ function handleGroupMessage(payload) {
   }
   if (payload.type === "state_sync" && payload.payload) {
     if (payload.targetPlayerId && payload.targetPlayerId !== state.localPlayer.id) return;
+    const previousGame = state.game;
     state.game = payload.payload;
+    notifyGameUpdate(previousGame, state.game);
     renderAll();
     renderLog();
     return;
@@ -899,6 +972,7 @@ async function connect() {
           }
           state.connected = true;
           els.connectionStatus.textContent = "Verbonden";
+          showToast("Verbonden met de lobby.", "success");
           sendPresence();
           requestState();
           startTimers();
@@ -948,6 +1022,7 @@ function startGame() {
     return;
   }
   state.game = initialGameFromPlayers(players);
+  notifyGameUpdate(null, state.game);
   renderAll();
   renderLog();
   sendStateSync();
