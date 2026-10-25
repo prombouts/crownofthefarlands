@@ -97,9 +97,10 @@ beschikbaar zijn voor die builds.
 
 1. Open de site op meerdere apparaten.
 2. Vul voor iedere speler een naam in.
-3. Gebruik dezelfde kamercode.
-4. Klik op **Verbinden**.
-5. De host (eerste speler) klikt **Spel starten**.
+3. De host vult een kamercode in en klikt op **Verbinden**.
+4. De host deelt de **uitnodigingslink** vanuit de lobby. Deze link vult de kamercode automatisch in.
+5. Andere spelers openen de uitnodigingslink en klikken op **Verbinden**.
+6. De host (eerste speler) klikt **Spel starten**.
 
 ## Notities
 

@@ -35,6 +35,7 @@ const els = {
   playerName: document.getElementById("player-name"),
   roomCode: document.getElementById("room-code"),
   connectBtn: document.getElementById("connect-btn"),
+  copyInviteBtn: document.getElementById("copy-invite-btn"),
   connectionStatus: document.getElementById("connection-status"),
   playersList: document.getElementById("players-list"),
   startGameBtn: document.getElementById("start-game-btn"),
@@ -684,25 +685,24 @@ async function connect() {
     state.players = {};
     updatePresence(state.localPlayer);
 
+    let joinAckId = null;
+    let joinFailed = false;
     state.socket = new WebSocket(data.url, "json.webpubsub.azure.v1");
     state.socket.onopen = () => {
-      state.connected = true;
-      els.connectionStatus.textContent = "Verbonden";
+      els.connectionStatus.textContent = "Kamer verbinden...";
+      joinAckId = state.ackId++;
       state.socket.send(
         JSON.stringify({
           type: "joinGroup",
           group: roomCode,
-          ackId: state.ackId++
+          ackId: joinAckId
         })
       );
-      sendPresence();
-      requestState();
-      startTimers();
-      renderAll();
     };
     state.socket.onclose = () => {
       state.connected = false;
-      els.connectionStatus.textContent = "Verbinding verbroken";
+      els.connectionStatus.textContent = joinFailed ? "Kamer niet toegankelijk" : "Verbinding verbroken";
+      els.copyInviteBtn.disabled = true;
       stopTimers();
       addLog("Verbinding gesloten.");
       renderAll();
@@ -713,6 +713,26 @@ async function connect() {
     state.socket.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
+        if (msg.type === "ack" && msg.ackId === joinAckId) {
+          if (!msg.success) {
+            joinFailed = true;
+            addLog(`Kamer joinen mislukt: ${msg.error?.message || "toegang geweigerd."}`);
+            state.socket.close();
+            return;
+          }
+          state.connected = true;
+          els.connectionStatus.textContent = "Verbonden";
+          els.copyInviteBtn.disabled = false;
+          sendPresence();
+          requestState();
+          startTimers();
+          renderAll();
+          return;
+        }
+        if (msg.type === "ack" && !msg.success) {
+          addLog(`Bericht versturen mislukt: ${msg.error?.message || "onbekende fout."}`);
+          return;
+        }
         if (msg.type === "message" && msg.dataType === "json") {
           handleGroupMessage(msg.data);
         }
@@ -725,6 +745,18 @@ async function connect() {
     els.connectionStatus.textContent = "Niet verbonden";
   } finally {
     els.connectBtn.disabled = false;
+  }
+}
+
+async function copyInviteLink() {
+  if (!state.roomCode || !state.connected) return;
+  const inviteUrl = new URL(window.location.href);
+  inviteUrl.searchParams.set("room", state.roomCode);
+  try {
+    await navigator.clipboard.writeText(inviteUrl.toString());
+    addLog("Uitnodigingslink gekopieerd. Deel deze met andere spelers.");
+  } catch (error) {
+    addLog(`Uitnodigingslink kopiëren mislukt: ${error.message}`);
   }
 }
 
@@ -741,7 +773,13 @@ function startGame() {
   sendStateSync();
 }
 
+const inviteRoomCode = new URLSearchParams(window.location.search).get("room");
+if (inviteRoomCode) {
+  els.roomCode.value = inviteRoomCode.trim().toLowerCase();
+}
+
 els.connectBtn.addEventListener("click", connect);
+els.copyInviteBtn.addEventListener("click", copyInviteLink);
 els.startGameBtn.addEventListener("click", startGame);
 
 resetGameUi();
