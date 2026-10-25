@@ -6,26 +6,24 @@ function randomId(prefix = "") {
   return `${prefix}${Math.random().toString(36).slice(2, 10)}`;
 }
 
-module.exports = async function (context, req) {
+module.exports = async function (request, context) {
   try {
-    const requestedName = (req.query.name || "").trim();
-    const room = (req.query.room || "").trim();
+    const requestedName = (request.query.get("name") || "").trim();
+    const room = (request.query.get("room") || "").trim();
     if (!requestedName || !room) {
-      context.res = {
+      return {
         status: 400,
-        body: { error: "Naam en kamercode zijn verplicht." }
+        jsonBody: { error: "Naam en kamercode zijn verplicht." }
       };
-      return;
     }
 
     const connectionString = process.env.WEB_PUBSUB_CONNECTION_STRING;
     const hub = process.env.WEB_PUBSUB_HUB || "riskonline";
     if (!connectionString) {
-      context.res = {
+      return {
         status: 500,
-        body: { error: "WEB_PUBSUB_CONNECTION_STRING ontbreekt." }
+        jsonBody: { error: "WEB_PUBSUB_CONNECTION_STRING ontbreekt." }
       };
-      return;
     }
 
     const playerId = randomId("p-");
@@ -36,23 +34,23 @@ module.exports = async function (context, req) {
       groups: [room]
     });
 
-    context.res = {
+    return {
       status: 200,
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-store"
       },
-      body: {
+      jsonBody: {
         url: token.url,
         playerId,
         color: PLAYER_COLORS[Math.floor(Math.random() * PLAYER_COLORS.length)]
       }
     };
   } catch (error) {
-    context.log.error("Negotiate error", error);
-    context.res = {
+    context.error("Negotiate error", error);
+    return {
       status: 500,
-      body: { error: "Kon geen realtime token aanmaken." }
+      jsonBody: { error: "Kon geen realtime token aanmaken." }
     };
   }
 };

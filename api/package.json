@@ -4,6 +4,7 @@
   "private": true,
   "main": "index.js",
   "dependencies": {
+    "@azure/functions": "^4.17.0",
     "@azure/web-pubsub": "^1.2.0"
   }
 }
