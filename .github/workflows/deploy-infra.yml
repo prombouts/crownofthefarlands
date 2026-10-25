@@ -1,0 +1,62 @@
+name: Deploy Azure Infra
+
+on:
+  workflow_dispatch:
+    inputs:
+      location:
+        description: Azure regio (bijv. westeurope)
+        required: false
+        default: westeurope
+      staticWebAppName:
+        description: Naam van de Static Web App
+        required: true
+      webPubSubName:
+        description: Naam van de Web PubSub resource
+        required: true
+      webPubSubHub:
+        description: Hubnaam voor multiplayer
+        required: false
+        default: riskonline
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AZURE_RG: ${{ vars.AZURE_RG }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Ensure resource group exists
+        run: |
+          if [ -z "$AZURE_RG" ]; then
+            echo "Repository variable AZURE_RG ontbreekt."
+            exit 1
+          fi
+          az group create \
+            --name "$AZURE_RG" \
+            --location "${{ inputs.location }}" \
+            --output none
+
+      - name: Deploy Bicep
+        run: |
+          az deployment group create \
+            --resource-group "$AZURE_RG" \
+            --template-file infra/main.bicep \
+            --parameters \
+              location="${{ inputs.location }}" \
+              staticWebAppName="${{ inputs.staticWebAppName }}" \
+              webPubSubName="${{ inputs.webPubSubName }}" \
+              webPubSubHub="${{ inputs.webPubSubHub }}" \
+            --output table

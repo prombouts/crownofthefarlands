@@ -1,0 +1,9 @@
+{
+  "name": "riskonline-api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "@azure/web-pubsub": "^1.3.1"
+  }
+}
