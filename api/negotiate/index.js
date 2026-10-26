@@ -1,9 +1,10 @@
 const { WebPubSubServiceClient } = require("@azure/web-pubsub");
+const { randomBytes } = require("crypto");
 
 const PLAYER_COLORS = ["#e74c3c", "#f39c12", "#2ecc71", "#3498db", "#9b59b6", "#1abc9c"];
 
 function randomId(prefix = "") {
-  return `${prefix}${Math.random().toString(36).slice(2, 10)}`;
+  return `${prefix}${randomBytes(8).toString("hex").slice(0, 8)}`;
 }
 
 module.exports = async function (request, context) {
