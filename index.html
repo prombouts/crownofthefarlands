@@ -9,23 +9,55 @@
   <body>
     <main class="app">
       <header class="header">
-        <h1>Crown of the Farlands</h1>
-        <p class="subtitle">Een kaart. Twaalf gebieden. Jouw volgende zet.</p>
+        <div class="header-copy">
+          <h1 data-i18n="page.title">Crown of the Farlands</h1>
+          <p class="subtitle" data-i18n="page.subtitle">Een kaart. Twaalf gebieden. Jouw volgende zet.</p>
+        </div>
+        <div
+          id="language-switch"
+          class="language-switch"
+          role="group"
+          data-i18n-aria-label="language.group"
+        >
+          <button
+            class="language-button"
+            type="button"
+            data-language="nl"
+            data-i18n-title="language.switchDutch"
+            data-i18n-aria-label="language.switchDutch"
+            aria-label="Schakel naar Nederlands"
+            aria-pressed="true"
+          ><span aria-hidden="true">🇳🇱</span></button>
+          <button
+            class="language-button"
+            type="button"
+            data-language="en"
+            data-i18n-title="language.switchEnglish"
+            data-i18n-aria-label="language.switchEnglish"
+            aria-label="Schakel naar Engels"
+            aria-pressed="false"
+          ><span aria-hidden="true">🇬🇧</span></button>
+        </div>
       </header>
 
       <div class="battle-layout">
         <section class="map-panel" aria-labelledby="map-heading">
         <div class="map-heading">
           <div>
-            <h2 id="map-heading">De wereldkaart</h2>
-            <p>Een verre wereld van ruige kusten, droge hooglanden en lange routes.</p>
+            <h2 id="map-heading" data-i18n="map.title">De wereldkaart</h2>
+            <p data-i18n="map.description">Een verre wereld van ruige kusten, droge hooglanden en lange routes.</p>
           </div>
-          <div class="map-key" role="group" aria-label="Kaartlegenda">
+          <div class="map-key" role="group" data-i18n-aria-label="map.legend">
             <span class="map-key-armies">
               <span class="map-key-swatch map-key-swatch--armies" aria-hidden="true"></span>
-              Legers
+              <span data-i18n="map.armiesLabel">Legers</span>
             </span>
-            <div id="map-player-legend" class="map-player-legend" role="list" aria-label="Spelers en kleuren"></div>
+            <div
+              id="map-player-legend"
+              class="map-player-legend"
+              role="list"
+              data-i18n-aria-label="map.players"
+            ></div>
           </div>
         </div>
         <div class="map-frame">
@@ -34,7 +66,7 @@
             class="game-map"
             viewBox="0 0 1000 730"
             role="group"
-            aria-label="Spelwereld met meerdere continenten en twaalf verbonden gebieden"
+            data-i18n-aria-label="map.accessible"
           >
             <defs>
               <pattern id="sea-grid" width="48" height="48" patternUnits="userSpaceOnUse">
@@ -78,16 +110,16 @@
             <g class="map-ridges" aria-hidden="true">
               <path d="M294 175 L309 153 L323 175 L339 146 L357 175 L373 157 L390 178 M438 186 L453 165 L466 182 L483 151 L504 181 L519 164 L537 183 M145 403 L159 380 L173 401 L187 371 L207 403 L222 385 L239 404 M449 389 L465 367 L479 388 L496 358 L515 387 L532 369 L548 390 M744 408 L760 386 L775 407 L791 375 L811 408 L827 389 L844 410 M158 637 L174 615 L190 637 L205 607 L224 638 M788 628 L805 606 L821 629 L838 600 L858 632" />
             </g>
-            <text class="map-sea-label" x="77" y="87">KOBALTZEE</text>
-            <text class="map-sea-label" x="812" y="126">DE VERRE STROOM</text>
-            <text class="map-sea-label" x="455" y="705">ZUIDELIJKE DOORGANG</text>
+            <text class="map-sea-label" x="77" y="87" data-i18n="map.seaCobalt">KOBALTZEE</text>
+            <text class="map-sea-label" x="812" y="126" data-i18n="map.glassRiver">DE VERRE STROOM</text>
+            <text class="map-sea-label" x="455" y="705" data-i18n="map.southernPassage">ZUIDELIJKE DOORGANG</text>
             <g id="map-routes" aria-hidden="true"></g>
-            <text class="map-region-label" x="428" y="180" text-anchor="middle">ZOUTRUG</text>
-            <text class="map-region-label" x="214" y="410" text-anchor="middle">KOPERKUST</text>
-            <text class="map-region-label" x="493" y="388" text-anchor="middle">STOFPLATEAU</text>
-            <text class="map-region-label" x="764" y="405" text-anchor="middle">GLASLAND</text>
-            <text class="map-region-label" x="185" y="620" text-anchor="middle">VERRE WESTEN</text>
-            <text class="map-region-label" x="788" y="610" text-anchor="middle">ZUIDERLAND</text>
+            <text class="map-region-label" x="428" y="180" text-anchor="middle" data-i18n="map.saltRidge">ZOUTRUG</text>
+            <text class="map-region-label" x="214" y="410" text-anchor="middle" data-i18n="map.copperCoast">KOPERKUST</text>
+            <text class="map-region-label" x="493" y="388" text-anchor="middle" data-i18n="map.dustPlateau">STOFPLATEAU</text>
+            <text class="map-region-label" x="764" y="405" text-anchor="middle" data-i18n="map.glasslands">GLASLAND</text>
+            <text class="map-region-label" x="185" y="620" text-anchor="middle" data-i18n="map.farWest">VERRE WESTEN</text>
+            <text class="map-region-label" x="788" y="610" text-anchor="middle" data-i18n="map.southernLands">ZUIDERLAND</text>
             <g id="territory-list"></g>
             <g class="compass" transform="translate(923 98)" aria-hidden="true">
               <path d="M0 -28 L8 0 L0 28 L-8 0 Z" />
@@ -97,9 +129,9 @@
         </div>
         </section>
 
-        <aside class="game-sidebar" aria-label="Spelbediening">
+        <aside class="game-sidebar" data-i18n-aria-label="map.sidebar">
           <section class="panel" id="game-panel">
-            <h2>Spel</h2>
+            <h2 data-i18n="game.title">Spel</h2>
             <div id="game-meta" class="meta"></div>
             <div id="phase-actions" class="phase-actions"></div>
             <div id="attack-controls" class="inline-form"></div>
@@ -107,7 +139,7 @@
           </section>
 
           <section class="panel" aria-labelledby="game-log-heading">
-            <h2 id="game-log-heading">Logboek</h2>
+            <h2 id="game-log-heading" data-i18n="game.log">Logboek</h2>
             <ul id="log-list" class="log-list"></ul>
           </section>
         </aside>
@@ -115,35 +147,41 @@
 
       <details class="panel" id="connection-panel" open>
         <summary class="panel-summary">
-          <h2>Verbinding</h2>
-          <span id="connection-status" class="status">Niet verbonden</span>
+          <h2 data-i18n="connection.title">Verbinding</h2>
+          <span id="connection-status" class="status" data-i18n-aria-label="connection.status">Niet verbonden</span>
         </summary>
         <div class="grid-2">
           <label>
-            Jouw naam
-            <input id="player-name" type="text" maxlength="24" placeholder="Bijv. Robin" />
+            <span data-i18n="connection.playerName">Jouw naam</span>
+            <input
+              id="player-name"
+              type="text"
+              maxlength="24"
+              placeholder="Bijv. Robin"
+              data-i18n-placeholder="connection.namePlaceholder"
+            />
           </label>
           <label>
-            Kamercode (automatisch)
+            <span data-i18n="connection.roomCode">Kamercode (automatisch)</span>
             <input id="room-code" type="text" maxlength="24" readonly aria-describedby="room-code-help" />
-            <small id="room-code-help" class="field-hint">
+            <small id="room-code-help" class="field-hint" data-i18n="connection.roomCodeHelp">
               Automatisch aangemaakt. Deel de uitnodigingslink om anderen uit te nodigen.
             </small>
           </label>
         </div>
         <div class="actions">
-          <button id="connect-btn">Verbinden</button>
+          <button id="connect-btn" data-i18n="connection.connect">Verbinden</button>
         </div>
       </details>
 
       <details class="panel" id="lobby-panel" open>
         <summary class="panel-summary">
-          <h2>Lobby</h2>
-          <span id="host-label" class="status">Host: onbekend</span>
+          <h2 data-i18n="connection.lobby">Lobby</h2>
+          <span id="host-label" class="status" data-i18n="connection.unknownHost">Host: onbekend</span>
         </summary>
         <div class="actions">
-          <button id="start-game-btn" disabled>Spel starten</button>
-          <button id="copy-invite-btn" disabled>Uitnodigingslink kopiëren</button>
+          <button id="start-game-btn" disabled data-i18n="connection.startGame">Spel starten</button>
+          <button id="copy-invite-btn" disabled data-i18n="connection.copyInvite">Uitnodigingslink kopiëren</button>
         </div>
         <div id="players-list" class="chips"></div>
       </details>
@@ -153,8 +191,8 @@
     <div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-relevant="additions"></div>
 
     <footer class="site-footer">
-      <span>Versie <span id="app-version" aria-live="polite">Laden...</span></span>
-      <span>Gebouwd door <a href="https://peterrombouts.nl">Peter Rombouts</a></span>
+      <span><span data-i18n="connection.version">Versie</span> <span id="app-version" aria-live="polite" data-i18n="connection.loading">Laden...</span></span>
+      <span><span data-i18n="connection.builtBy">Gebouwd door</span> <a href="https://peterrombouts.nl">Peter Rombouts</a></span>
     </footer>
 
     <script src="app.js"></script>

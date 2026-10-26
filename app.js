@@ -44,11 +44,261 @@ const ROOM_CODE_LANDMARKS = [
 ];
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+const TRANSLATIONS = {
+  nl: {
+    "page.title": "Crown of the Farlands",
+    "page.subtitle": "Een kaart. Twaalf gebieden. Jouw volgende zet.",
+    "language.group": "Taalkeuze",
+    "language.dutch": "Nederlands",
+    "language.english": "Engels (VK)",
+    "language.switchDutch": "Schakel naar Nederlands",
+    "language.switchEnglish": "Schakel naar Engels",
+    "map.title": "De wereldkaart",
+    "map.description": "Een verre wereld van ruige kusten, droge hooglanden en lange routes.",
+    "map.legend": "Kaartlegenda",
+    "map.armiesLabel": "Legers",
+    "map.players": "Spelers en kleuren",
+    "map.accessible": "Spelwereld met meerdere continenten en twaalf verbonden gebieden",
+    "map.seaCobalt": "KOBALTZEE",
+    "map.glassRiver": "DE VERRE STROOM",
+    "map.southernPassage": "ZUIDELIJKE DOORGANG",
+    "map.saltRidge": "ZOUTRUG",
+    "map.copperCoast": "KOPERKUST",
+    "map.dustPlateau": "STOFPLATEAU",
+    "map.glasslands": "GLASLAND",
+    "map.farWest": "VERRE WESTEN",
+    "map.southernLands": "ZUIDERLAND",
+    "territory.noordwest": "Noordwest",
+    "territory.noord": "Noord",
+    "territory.noordoost": "Noordoost",
+    "territory.west": "West",
+    "territory.centrum": "Centrum",
+    "territory.oost": "Oost",
+    "territory.zuidwest": "Zuidwest",
+    "territory.zuid": "Zuid",
+    "territory.zuidoost": "Zuidoost",
+    "territory.verre-zuidwest": "Verre Zuidwest",
+    "territory.eiland": "Eiland",
+    "territory.verre-zuidoost": "Verre Zuidoost",
+    "map.sidebar": "Spelbediening",
+    "map.neutral": "neutraal",
+    "map.territory": "{name}: {owner}, {armies}",
+    "map.armySingle": "1 leger",
+    "map.armiesCount": "{count} legers",
+    "map.placeArmyHint": "Klik om 1 leger te plaatsen.",
+    "game.title": "Spel",
+    "game.log": "Logboek",
+    "game.noGame": "Nog geen spel gestart.",
+    "game.meta": "Beurt: {player} • Fase: {phase} • Versterkingen over: {count}",
+    "game.winner": "Winnaar: {player}.",
+    "phase.versterken": "Versterken",
+    "phase.aanvallen": "Aanvallen",
+    "phase.verplaatsen": "Verplaatsen",
+    "game.placeArmyHelp": "Klik op een eigen gebied om 1 leger te plaatsen.",
+    "game.waiting": "Wachten op de actieve speler.",
+    "game.endAttack": "Aanvallen beëindigen",
+    "game.endTurn": "Beurt beëindigen",
+    "game.noAttack": "Geen geldige aanval beschikbaar.",
+    "game.attackFrom": "Aanvallen vanuit",
+    "game.attackTo": "Aanvallen naar",
+    "game.dice": "Dobbelstenen",
+    "game.die": "dobbelsteen",
+    "game.diceCount": "{count} dobbelstenen",
+    "game.attack": "Aanval uitvoeren",
+    "game.noMovement": "Geen geldige verplaatsing beschikbaar.",
+    "game.moveFrom": "Verplaatsen vanuit",
+    "game.moveTo": "Verplaatsen naar",
+    "game.armyCount": "Aantal legers",
+    "game.move": "Verplaatsen",
+    "log.started": "{player} begint het spel.",
+    "log.reinforced": "{player} versterkt {territory}.",
+    "log.attack": "{player} valt {territory} aan ({attack} vs {defense}).",
+    "log.conquered": "{player} verovert {territory}.",
+    "log.winner": "🏆 {player} wint het spel!",
+    "log.movementPhase": "{player} gaat naar verplaatsen.",
+    "log.movedArmies": "{player} verplaatst {count} van {from} naar {to}.",
+    "log.newTurn": "Nieuwe beurt: {player}.",
+    "connection.title": "Verbinding",
+    "connection.status": "Verbindingsstatus",
+    "connection.disconnected": "Niet verbonden",
+    "connection.connecting": "Verbinden...",
+    "connection.joining": "Kamer verbinden...",
+    "connection.connected": "Verbonden",
+    "connection.inaccessible": "Kamer niet toegankelijk",
+    "connection.lost": "Verbinding verbroken",
+    "connection.playerName": "Jouw naam",
+    "connection.namePlaceholder": "Bijv. Robin",
+    "connection.roomCode": "Kamercode (automatisch)",
+    "connection.roomCodeHelp": "Automatisch aangemaakt. Deel de uitnodigingslink om anderen uit te nodigen.",
+    "connection.connect": "Verbinden",
+    "connection.lobby": "Lobby",
+    "connection.unknownHost": "Host: onbekend",
+    "connection.waitingHost": "Wachten op lobbyhost",
+    "connection.host": "Host: {name}",
+    "connection.startGame": "Spel starten",
+    "connection.copyInvite": "Uitnodigingslink kopiëren",
+    "connection.version": "Versie",
+    "connection.loading": "Laden...",
+    "connection.builtBy": "Gebouwd door",
+    "toast.dismiss": "Melding sluiten",
+    "error.nameRequired": "Vul je naam in.",
+    "error.roomMissing": "Er is geen kamercode beschikbaar. Vernieuw de pagina.",
+    "error.negotiate": "Verbinden mislukt (fout {status}).",
+    "error.invalidNegotiate": "Ongeldige verbindingsreactie ontvangen.",
+    "error.accessDenied": "toegang geweigerd.",
+    "error.joinFailed": "Kamer joinen mislukt: {reason}",
+    "error.sendFailed": "Bericht versturen mislukt: {reason}",
+    "error.unknown": "onbekende fout.",
+    "error.connectionClosed": "Verbinding gesloten.",
+    "error.websocket": "WebSocket-fout.",
+    "error.unexpected": "Onverwacht bericht ontvangen.",
+    "error.connectionFailed": "Verbinden mislukt: {reason}",
+    "error.inviteCopied": "Uitnodigingslink gekopieerd. Deel deze met andere spelers.",
+    "error.inviteCopyFailed": "Uitnodigingslink kopiëren mislukt: {reason}",
+    "error.minPlayers": "Er zijn minimaal 2 spelers nodig.",
+    "error.versionFetch": "Versiebestand ophalen mislukt: {status}",
+    "error.versionInvalid": "package.json bevat geen geldige versiewaarde.",
+    "error.versionUnknown": "Onbekend"
+  },
+  en: {
+    "page.title": "Crown of the Farlands",
+    "page.subtitle": "One map. Twelve territories. Your next move.",
+    "language.group": "Choose language",
+    "language.dutch": "Dutch",
+    "language.english": "English (UK)",
+    "language.switchDutch": "Switch to Dutch",
+    "language.switchEnglish": "Switch to English",
+    "map.title": "The world map",
+    "map.description": "A distant world of rugged coasts, dry highlands and long routes.",
+    "map.legend": "Map legend",
+    "map.armiesLabel": "Armies",
+    "map.players": "Players and colours",
+    "map.accessible": "Game world with several continents and twelve connected territories",
+    "map.seaCobalt": "COBALT SEA",
+    "map.glassRiver": "THE GLASS RIVER",
+    "map.southernPassage": "SOUTHERN PASSAGE",
+    "map.saltRidge": "SALT RIDGE",
+    "map.copperCoast": "COPPER COAST",
+    "map.dustPlateau": "DUST PLATEAU",
+    "map.glasslands": "GLASSLANDS",
+    "map.farWest": "FAR WEST",
+    "map.southernLands": "SOUTHERN LANDS",
+    "territory.noordwest": "North-West",
+    "territory.noord": "North",
+    "territory.noordoost": "North-East",
+    "territory.west": "West",
+    "territory.centrum": "Central",
+    "territory.oost": "East",
+    "territory.zuidwest": "South-West",
+    "territory.zuid": "South",
+    "territory.zuidoost": "South-East",
+    "territory.verre-zuidwest": "Far South-West",
+    "territory.eiland": "Island",
+    "territory.verre-zuidoost": "Far South-East",
+    "map.sidebar": "Game controls",
+    "map.neutral": "neutral",
+    "map.territory": "{name}: {owner}, {armies}",
+    "map.armySingle": "1 army",
+    "map.armiesCount": "{count} armies",
+    "map.placeArmyHint": "Click to place 1 army.",
+    "game.title": "Game",
+    "game.log": "Game log",
+    "game.noGame": "No game started yet.",
+    "game.meta": "Turn: {player} • Phase: {phase} • Reinforcements left: {count}",
+    "game.winner": "Winner: {player}.",
+    "phase.versterken": "Reinforcement",
+    "phase.aanvallen": "Attack",
+    "phase.verplaatsen": "Movement",
+    "game.placeArmyHelp": "Click one of your territories to place 1 army.",
+    "game.waiting": "Waiting for the active player.",
+    "game.endAttack": "End attack phase",
+    "game.endTurn": "End turn",
+    "game.noAttack": "No valid attack available.",
+    "game.attackFrom": "Attack from",
+    "game.attackTo": "Attack to",
+    "game.dice": "Attack dice",
+    "game.die": "die",
+    "game.diceCount": "{count} dice",
+    "game.attack": "Attack",
+    "game.noMovement": "No valid move available.",
+    "game.moveFrom": "Move from",
+    "game.moveTo": "Move to",
+    "game.armyCount": "Number of armies",
+    "game.move": "Move armies",
+    "log.started": "{player} begins the game.",
+    "log.reinforced": "{player} reinforces {territory}.",
+    "log.attack": "{player} attacks {territory} ({attack} vs {defense}).",
+    "log.conquered": "{player} conquers {territory}.",
+    "log.winner": "🏆 {player} wins the game!",
+    "log.movementPhase": "{player} moves to the movement phase.",
+    "log.movedArmies": "{player} moves {count} armies from {from} to {to}.",
+    "log.newTurn": "New turn: {player}.",
+    "connection.title": "Connection",
+    "connection.status": "Connection status",
+    "connection.disconnected": "Not connected",
+    "connection.connecting": "Connecting...",
+    "connection.joining": "Joining room...",
+    "connection.connected": "Connected",
+    "connection.inaccessible": "Room unavailable",
+    "connection.lost": "Connection lost",
+    "connection.playerName": "Your name",
+    "connection.namePlaceholder": "e.g. Robin",
+    "connection.roomCode": "Room code (automatic)",
+    "connection.roomCodeHelp": "Created automatically. Share the invite link to invite others.",
+    "connection.connect": "Connect",
+    "connection.lobby": "Lobby",
+    "connection.unknownHost": "Host: unknown",
+    "connection.waitingHost": "Waiting for the host",
+    "connection.host": "Host: {name}",
+    "connection.startGame": "Start game",
+    "connection.copyInvite": "Copy invite link",
+    "connection.version": "Version",
+    "connection.loading": "Loading...",
+    "connection.builtBy": "Built by",
+    "toast.dismiss": "Dismiss notification",
+    "error.nameRequired": "Enter your name.",
+    "error.roomMissing": "No room code is available. Refresh the page.",
+    "error.negotiate": "Could not connect (error {status}).",
+    "error.invalidNegotiate": "Received an invalid connection response.",
+    "error.accessDenied": "access denied.",
+    "error.joinFailed": "Could not join the room: {reason}",
+    "error.sendFailed": "Could not send message: {reason}",
+    "error.unknown": "unknown error.",
+    "error.connectionClosed": "Connection closed.",
+    "error.websocket": "WebSocket error.",
+    "error.unexpected": "Received an unexpected message.",
+    "error.connectionFailed": "Connection failed: {reason}",
+    "error.inviteCopied": "Invite link copied. Share it with other players.",
+    "error.inviteCopyFailed": "Could not copy invite link: {reason}",
+    "error.minPlayers": "At least 2 players are required.",
+    "error.versionFetch": "Could not load version file (error {status}).",
+    "error.versionInvalid": "package.json does not contain a valid version.",
+    "error.versionUnknown": "Unknown"
+  }
+};
+
+function getPreferredLanguage() {
+  try {
+    return localStorage.getItem("riskonline-language") === "en" ? "en" : "nl";
+  } catch (error) {
+    console.warn("Could not read the saved language preference.", error);
+    return "nl";
+  }
+}
+
+function translate(key, values = {}) {
+  const message = TRANSLATIONS[state.language]?.[key] ?? TRANSLATIONS.nl[key];
+  if (typeof message !== "string") throw new Error(`Missing translation: ${key}`);
+  return message.replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ""));
+}
+
 const HEARTBEAT_MS = 5000;
 const PRESENCE_TIMEOUT_MS = 20000;
 const STATE_SYNC_INTERVAL_MS = 8000;
 
 const state = {
+  language: getPreferredLanguage(),
+  connectionStatusKey: "connection.disconnected",
   localPlayer: null,
   roomCode: null,
   socket: null,
@@ -64,6 +314,8 @@ const state = {
 
 const els = {
   app: document.querySelector(".app"),
+  languageSwitch: document.getElementById("language-switch"),
+  languageButtons: Array.from(document.querySelectorAll("[data-language]")),
   playerName: document.getElementById("player-name"),
   roomCode: document.getElementById("room-code"),
   appVersion: document.getElementById("app-version"),
@@ -94,6 +346,50 @@ let gameWasStarted = false;
 let renderedTerritoryVisuals = null;
 const toastTimers = new WeakMap();
 
+function applyStaticTranslations() {
+  document.documentElement.lang = state.language === "en" ? "en-GB" : "nl";
+  document.title = translate("page.title");
+
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = translate(element.dataset.i18n);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-aria-label]")) {
+    element.setAttribute("aria-label", translate(element.dataset.i18nAriaLabel));
+  }
+  for (const element of document.querySelectorAll("[data-i18n-placeholder]")) {
+    element.setAttribute("placeholder", translate(element.dataset.i18nPlaceholder));
+  }
+  for (const element of document.querySelectorAll("[data-i18n-title]")) {
+    element.setAttribute("title", translate(element.dataset.i18nTitle));
+  }
+  for (const button of els.languageButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.language === state.language));
+  }
+  setConnectionStatus(state.connectionStatusKey);
+}
+
+function setLanguage(language) {
+  if (!Object.hasOwn(TRANSLATIONS, language)) {
+    throw new Error(`Unsupported language: ${language}`);
+  }
+  if (state.language === language) return;
+
+  state.language = language;
+  try {
+    localStorage.setItem("riskonline-language", language);
+  } catch (error) {
+    console.warn("Could not save the language preference.", error);
+  }
+  applyStaticTranslations();
+  renderAll();
+  renderLog();
+}
+
+function setConnectionStatus(key) {
+  state.connectionStatusKey = key;
+  els.connectionStatus.textContent = translate(key);
+}
+
 function randomId() {
   return Math.random().toString(36).slice(2, 10);
 }
@@ -107,15 +403,15 @@ function generateRoomCode() {
 async function loadAppVersion() {
   try {
     const response = await fetch("package.json", { cache: "no-store" });
-    if (!response.ok) throw new Error(`Versiebestand ophalen mislukt: ${response.status}`);
+    if (!response.ok) throw new Error(translate("error.versionFetch", { status: response.status }));
 
     const packageInfo = await response.json();
     if (typeof packageInfo.version !== "string" || !/^\d+\.\d+\.\d+$/.test(packageInfo.version)) {
-      throw new Error("package.json bevat geen geldige semantische versie.");
+      throw new Error(translate("error.versionInvalid"));
     }
     els.appVersion.textContent = `v${packageInfo.version}`;
   } catch (error) {
-    els.appVersion.textContent = "onbekend";
+    els.appVersion.textContent = translate("error.versionUnknown");
     console.error("Versie laden mislukt.", error);
   }
 }
@@ -142,7 +438,7 @@ function showToast(message, type = "info") {
   const closeButton = document.createElement("button");
   closeButton.className = "toast-close";
   closeButton.type = "button";
-  closeButton.setAttribute("aria-label", "Melding sluiten");
+  closeButton.setAttribute("aria-label", translate("toast.dismiss"));
   closeButton.textContent = "×";
   closeButton.addEventListener("click", () => dismissToast(toast));
 
@@ -155,16 +451,14 @@ function showToast(message, type = "info") {
 }
 
 function resetGameUi() {
-  els.gameMeta.textContent = "Nog geen spel gestart.";
+  els.gameMeta.textContent = translate("game.noGame");
   els.phaseActions.innerHTML = "";
   els.attackControls.innerHTML = "";
   els.fortifyControls.innerHTML = "";
 }
 
-function addLog(text) {
-  const isError = /mislukt|fout|onverwacht|vul je|geen kamercode|minimaal/i.test(text);
-  const isSuccess = /gekopieerd/i.test(text);
-  showToast(text, isError ? "error" : isSuccess ? "success" : "info");
+function addLog(text, type = "info") {
+  showToast(text, type);
 
   const li = document.createElement("li");
   li.textContent = text;
@@ -193,10 +487,10 @@ function recomputeHost() {
   state.isHost = state.localPlayer && state.hostId === state.localPlayer.id;
   const waitingForHost = invitedHostId && !state.players[invitedHostId];
   els.hostLabel.textContent = waitingForHost
-    ? "Wachten op lobbyhost"
+    ? translate("connection.waitingHost")
     : state.hostId
-      ? `Host: ${playerLabel(state.hostId)}`
-      : "Host: onbekend";
+      ? translate("connection.host", { name: playerLabel(state.hostId) })
+      : translate("connection.unknownHost");
   els.startGameBtn.disabled = !(state.isHost && state.connected && !state.game && entries.length >= 2);
   els.copyInviteBtn.disabled = !(state.isHost && state.connected);
 }
@@ -269,7 +563,11 @@ function renderTerritories() {
       currentPlayerCanAct() &&
       owner === state.localPlayer?.id
     );
-    const territoryLabel = `${t.naam}: ${ownerPlayer?.name || "neutraal"}, ${armies} legers`;
+    const territoryLabel = translate("map.territory", {
+      name: territoryName(t.id),
+      owner: ownerPlayer?.name || translate("map.neutral"),
+      armies: armies === 1 ? translate("map.armySingle") : translate("map.armiesCount", { count: armies })
+    });
     const marker = createSvgElement("g", {
       class:
         `territory-marker${ownerPlayer ? " is-owned" : ""}` +
@@ -278,7 +576,7 @@ function renderTerritories() {
       role: canPlaceReinforcement ? "button" : "img",
       ...(canPlaceReinforcement ? { tabindex: 0 } : {}),
       "aria-label": canPlaceReinforcement
-        ? `${territoryLabel}. Klik om 1 leger te plaatsen.`
+        ? `${territoryLabel}. ${translate("map.placeArmyHint")}`
         : territoryLabel
     });
     if (canPlaceReinforcement) {
@@ -310,7 +608,8 @@ function renderTerritories() {
       "text-anchor": "middle",
       "dominant-baseline": "middle"
     });
-    const words = t.naam.split(" ");
+    const nameText = territoryName(t.id);
+    const words = nameText.split(" ");
     if (words.length > 1) {
       const firstLine = createSvgElement("tspan", { x: t.x, dy: -6 });
       firstLine.textContent = words[0];
@@ -318,7 +617,7 @@ function renderTerritories() {
       secondLine.textContent = words.slice(1).join(" ");
       name.append(firstLine, secondLine);
     } else {
-      name.textContent = t.naam;
+      name.textContent = nameText;
     }
     marker.appendChild(name);
     els.territoryList.appendChild(marker);
@@ -383,14 +682,23 @@ function renderGameMeta() {
     return;
   }
   const turnPlayer = getCurrentTurnPlayer();
-  const winnerText = state.game.winnerId ? `Winnaar: ${playerLabel(state.game.winnerId)}.` : "";
+  const winnerText = state.game.winnerId
+    ? ` ${translate("game.winner", { player: playerLabel(state.game.winnerId) })}`
+    : "";
   els.gameMeta.textContent =
-    `Beurt: ${playerLabel(turnPlayer)} • Fase: ${state.game.phase} • ` +
-    `Versterkingen over: ${state.game.reinforcementsLeft} ${winnerText}`;
+    translate("game.meta", {
+      player: playerLabel(turnPlayer),
+      phase: translate(`phase.${state.game.phase}`),
+      count: state.game.reinforcementsLeft
+    }) + winnerText;
 }
 
 function territoryById(id) {
   return TERRITORIES.find((t) => t.id === id) || null;
+}
+
+function territoryName(id) {
+  return translate(`territory.${id}`);
 }
 
 function ownedTerritories(playerId) {
@@ -517,7 +825,7 @@ function renderActionPanels() {
   const fortifySelection = {
     fromId: selectedChoice(els.fortifyControls, "fortify-from"),
     toId: selectedChoice(els.fortifyControls, "fortify-to"),
-    armies: els.fortifyControls.querySelector('[aria-label="Aantal legers"]')?.value
+    armies: els.fortifyControls.querySelector('input[type="number"]')?.value
   };
   els.phaseActions.innerHTML = "";
   els.attackControls.innerHTML = "";
@@ -532,8 +840,8 @@ function renderActionPanels() {
     const help = document.createElement("span");
     help.className = "status";
     help.textContent = canControl
-      ? "Klik op een eigen gebied om 1 leger te plaatsen."
-      : "Wachten op de actieve speler.";
+      ? translate("game.placeArmyHelp")
+      : translate("game.waiting");
     els.phaseActions.appendChild(help);
   }
 
@@ -543,11 +851,11 @@ function renderActionPanels() {
     } else {
       const waiting = document.createElement("span");
       waiting.className = "status";
-      waiting.textContent = "Wachten op de actieve speler.";
+      waiting.textContent = translate("game.waiting");
       els.phaseActions.appendChild(waiting);
     }
     const endAttack = document.createElement("button");
-    endAttack.textContent = "Aanvallen beëindigen";
+    endAttack.textContent = translate("game.endAttack");
     endAttack.disabled = !canControl;
     endAttack.onclick = () => sendAction({ kind: "end_attack_phase" });
     els.attackControls.appendChild(endAttack);
@@ -559,11 +867,11 @@ function renderActionPanels() {
     } else {
       const waiting = document.createElement("span");
       waiting.className = "status";
-      waiting.textContent = "Wachten op de actieve speler.";
+      waiting.textContent = translate("game.waiting");
       els.phaseActions.appendChild(waiting);
     }
     const endTurn = document.createElement("button");
-    endTurn.textContent = "Beurt beëindigen";
+    endTurn.textContent = translate("game.endTurn");
     endTurn.disabled = !canControl;
     endTurn.onclick = () => sendAction({ kind: "end_turn" });
     els.fortifyControls.appendChild(endTurn);
@@ -581,7 +889,7 @@ function renderAttackControls(selection = {}) {
   if (!fromCandidates.length) {
     const msg = document.createElement("span");
     msg.className = "status";
-    msg.textContent = "Geen geldige aanval beschikbaar.";
+    msg.textContent = translate("game.noAttack");
     els.attackControls.appendChild(msg);
     return;
   }
@@ -594,13 +902,16 @@ function renderAttackControls(selection = {}) {
   const diceOptions = [1, 2, 3].map((value) => ({
     value: String(value),
     label: String(value),
-    ariaLabel: `${value} ${value === 1 ? "dobbelsteen" : "dobbelstenen"}`,
+    ariaLabel:
+      value === 1
+        ? `1 ${translate("game.die")}`
+        : translate("game.diceCount", { count: value }),
     icon: createDieIcon(value),
     className: "dice-option-button"
   }));
   const fromGroup = createChoiceGroup(
-    "Aanvallen vanuit",
-    fromCandidates.map((id) => ({ value: id, label: territoryById(id).naam })),
+    translate("game.attackFrom"),
+    fromCandidates.map((id) => ({ value: id, label: territoryName(id) })),
     fromId,
     (id) => {
       fromId = id;
@@ -613,7 +924,7 @@ function renderAttackControls(selection = {}) {
       (nb) => state.game.territories[nb].ownerId !== state.localPlayer.id
     );
     toGroup.setOptions(
-      enemyNeighbors.map((id) => ({ value: id, label: territoryById(id).naam })),
+      enemyNeighbors.map((id) => ({ value: id, label: territoryName(id) })),
       toId
     );
     toId = toGroup.value;
@@ -630,7 +941,7 @@ function renderAttackControls(selection = {}) {
   }
 
   toGroup = createChoiceGroup(
-    "Aanvallen naar",
+    translate("game.attackTo"),
     [],
     null,
     (id) => {
@@ -638,7 +949,7 @@ function renderAttackControls(selection = {}) {
     }
   );
   diceGroup = createChoiceGroup(
-    "Dobbelstenen",
+    translate("game.dice"),
     diceOptions,
     String(diceCount),
     (value) => {
@@ -649,7 +960,7 @@ function renderAttackControls(selection = {}) {
   refreshToOptions();
 
   const btn = document.createElement("button");
-  btn.textContent = "Aanval uitvoeren";
+  btn.textContent = translate("game.attack");
   btn.onclick = () =>
     sendAction({
       kind: "attack",
@@ -677,7 +988,7 @@ function renderFortifyControls(selection = {}) {
   if (!fromCandidates.length) {
     const msg = document.createElement("span");
     msg.className = "status";
-    msg.textContent = "Geen geldige verplaatsing beschikbaar.";
+    msg.textContent = translate("game.noMovement");
     els.fortifyControls.appendChild(msg);
     return;
   }
@@ -686,15 +997,15 @@ function renderFortifyControls(selection = {}) {
   countInput.type = "number";
   countInput.min = "1";
   countInput.value = "1";
-  countInput.setAttribute("aria-label", "Aantal legers");
+  countInput.setAttribute("aria-label", translate("game.armyCount"));
   if (selection.armies) countInput.value = selection.armies;
 
   let fromId = fromCandidates.includes(selection.fromId) ? selection.fromId : fromCandidates[0];
   let toId = selection.toId;
   let toGroup;
   const fromGroup = createChoiceGroup(
-    "Verplaatsen vanuit",
-    fromCandidates.map((id) => ({ value: id, label: territoryById(id).naam })),
+    translate("game.moveFrom"),
+    fromCandidates.map((id) => ({ value: id, label: territoryName(id) })),
     fromId,
     (id) => {
       fromId = id;
@@ -705,7 +1016,7 @@ function renderFortifyControls(selection = {}) {
   function refreshToCandidates() {
     const valid = neighborsOf(fromId).filter((id) => state.game.territories[id].ownerId === myId);
     toGroup.setOptions(
-      valid.map((id) => ({ value: id, label: territoryById(id).naam })),
+      valid.map((id) => ({ value: id, label: territoryName(id) })),
       toId
     );
     toId = toGroup.value;
@@ -716,7 +1027,7 @@ function renderFortifyControls(selection = {}) {
   }
 
   toGroup = createChoiceGroup(
-    "Verplaatsen naar",
+    translate("game.moveTo"),
     [],
     null,
     (id) => {
@@ -726,7 +1037,7 @@ function renderFortifyControls(selection = {}) {
   refreshToCandidates();
 
   const btn = document.createElement("button");
-  btn.textContent = "Verplaatsen";
+  btn.textContent = translate("game.move");
   btn.onclick = () =>
     sendAction({
       kind: "fortify",
@@ -853,7 +1164,7 @@ function initialGameFromPlayers(playerIds) {
     reinforcementsLeft: 0,
     territories,
     winnerId: null,
-    log: [`Spel gestart. ${playerLabel(first)} begint.`],
+    log: [{ key: "log.started", params: { player: playerLabel(first) } }],
     lastFortifyTurn: null
   };
   game.reinforcementsLeft = computeReinforcementsFor(first, game);
@@ -873,25 +1184,40 @@ function checkWinner(game) {
   return null;
 }
 
-function appendGameLog(game, message) {
-  game.log.push(message);
+function appendGameLog(game, key, params = {}) {
+  game.log.push({ key, params });
   if (game.log.length > 120) {
     game.log.splice(0, game.log.length - 120);
   }
 }
 
+function gameLogText(entry) {
+  if (typeof entry === "string") return entry;
+  if (!entry || typeof entry.key !== "string") return "";
+  return translate(entry.key, entry.params || {});
+}
+
 function notifyGameUpdate(previousGame, nextGame) {
   const nextLog = Array.isArray(nextGame?.log) ? nextGame.log : [];
   const previousLog = Array.isArray(previousGame?.log) ? previousGame.log : [];
-  const latestMessage = nextLog.at(-1);
+  const latestEntry = nextLog.at(-1);
+  const latestMessage = gameLogText(latestEntry);
+  const previousEntry = previousLog.at(-1);
   if (
     typeof latestMessage !== "string" ||
-    (previousGame && nextLog.length <= previousLog.length && latestMessage === previousLog.at(-1))
+    !latestMessage ||
+    (previousGame &&
+      nextLog.length <= previousLog.length &&
+      JSON.stringify(latestEntry) === JSON.stringify(previousEntry))
   ) {
     return;
   }
 
-  const type = /spel gestart|verovert|wint het spel/i.test(latestMessage) ? "success" : "info";
+  const type =
+    ["log.started", "log.conquered", "log.winner"].includes(latestEntry?.key) ||
+    /spel gestart|verovert|wint het spel|game started|conquers|wins the game/i.test(latestMessage)
+      ? "success"
+      : "info";
   showToast(latestMessage, type);
 }
 
@@ -922,7 +1248,10 @@ function applyHostAction(message) {
     if (territory && territory.ownerId === actorId) {
       territory.armies += 1;
       game.reinforcementsLeft -= 1;
-      appendGameLog(game, `${playerLabel(actorId)} versterkt ${territoryById(reinforceTerritoryId).naam}.`);
+      appendGameLog(game, "log.reinforced", {
+        player: playerLabel(actorId),
+        territory: territoryName(reinforceTerritoryId)
+      });
       changed = true;
       if (game.reinforcementsLeft <= 0) {
         game.phase = "aanvallen";
@@ -950,10 +1279,12 @@ function applyHostAction(message) {
       else from.armies -= 1;
     }
 
-    appendGameLog(
-      game,
-      `${playerLabel(actorId)} valt ${territoryById(toId).naam} aan (${aRoll.join(",")} vs ${dRoll.join(",")}).`
-    );
+    appendGameLog(game, "log.attack", {
+      player: playerLabel(actorId),
+      territory: territoryName(toId),
+      attack: aRoll.join(","),
+      defense: dRoll.join(",")
+    });
     changed = true;
 
     if (to.armies <= 0) {
@@ -961,18 +1292,21 @@ function applyHostAction(message) {
       to.ownerId = actorId;
       to.armies = moveArmies;
       from.armies -= moveArmies;
-      appendGameLog(game, `${playerLabel(actorId)} verovert ${territoryById(toId).naam}.`);
+      appendGameLog(game, "log.conquered", {
+        player: playerLabel(actorId),
+        territory: territoryName(toId)
+      });
       const winner = checkWinner(game);
       if (winner) {
         game.winnerId = winner;
-        appendGameLog(game, `🏆 ${playerLabel(winner)} wint het spel!`);
+        appendGameLog(game, "log.winner", { player: playerLabel(winner) });
       }
     }
   }
 
   if (action.kind === "end_attack_phase" && game.phase === "aanvallen") {
     game.phase = "verplaatsen";
-    appendGameLog(game, `${playerLabel(actorId)} gaat naar verplaatsen.`);
+    appendGameLog(game, "log.movementPhase", { player: playerLabel(actorId) });
     changed = true;
   }
 
@@ -984,10 +1318,12 @@ function applyHostAction(message) {
     if (from && to && isNeighbor && from.ownerId === actorId && to.ownerId === actorId && from.armies > armies) {
       from.armies -= armies;
       to.armies += armies;
-      appendGameLog(
-        game,
-        `${playerLabel(actorId)} verplaatst ${armies} van ${territoryById(action.fromId).naam} naar ${territoryById(action.toId).naam}.`
-      );
+      appendGameLog(game, "log.movedArmies", {
+        player: playerLabel(actorId),
+        count: armies,
+        from: territoryName(action.fromId),
+        to: territoryName(action.toId)
+      });
       changed = true;
     }
   }
@@ -997,7 +1333,7 @@ function applyHostAction(message) {
     game.phase = "versterken";
     const nextPlayer = game.turnOrder[game.turnIndex];
     game.reinforcementsLeft = computeReinforcementsFor(nextPlayer, game);
-    appendGameLog(game, `Nieuwe beurt: ${playerLabel(nextPlayer)}.`);
+    appendGameLog(game, "log.newTurn", { player: playerLabel(nextPlayer) });
     changed = true;
   }
 
@@ -1024,7 +1360,7 @@ function renderLog() {
   if (!state.game?.log) return;
   for (let i = state.game.log.length - 1; i >= 0; i -= 1) {
     const li = document.createElement("li");
-    li.textContent = state.game.log[i];
+    li.textContent = gameLogText(state.game.log[i]);
     els.logList.appendChild(li);
   }
 }
@@ -1075,24 +1411,24 @@ async function connect() {
   const name = els.playerName.value.trim();
   const roomCode = els.roomCode.value.trim().toLowerCase();
   if (!name) {
-    addLog("Vul je naam in.");
+    addLog(translate("error.nameRequired"), "error");
     return;
   }
   if (!roomCode) {
-    addLog("Er is geen kamercode beschikbaar. Vernieuw de pagina.");
+    addLog(translate("error.roomMissing"), "error");
     return;
   }
 
   els.connectBtn.disabled = true;
-  els.connectionStatus.textContent = "Verbinden...";
+  setConnectionStatus("connection.connecting");
 
   try {
     const resp = await fetch(
       `/api/negotiate?name=${encodeURIComponent(name)}&room=${encodeURIComponent(roomCode)}`
     );
-    if (!resp.ok) throw new Error(`Negotiate fout: ${resp.status}`);
+    if (!resp.ok) throw new Error(translate("error.negotiate", { status: resp.status }));
     const data = await resp.json();
-    if (!data.url || !data.playerId) throw new Error("Ongeldige negotiate respons.");
+    if (!data.url || !data.playerId) throw new Error(translate("error.invalidNegotiate"));
 
     state.localPlayer = {
       id: data.playerId,
@@ -1108,7 +1444,7 @@ async function connect() {
     let joinFailed = false;
     state.socket = new WebSocket(data.url, "json.webpubsub.azure.v1");
     state.socket.onopen = () => {
-      els.connectionStatus.textContent = "Kamer verbinden...";
+      setConnectionStatus("connection.joining");
       joinAckId = state.ackId++;
       state.socket.send(
         JSON.stringify({
@@ -1120,14 +1456,14 @@ async function connect() {
     };
     state.socket.onclose = () => {
       state.connected = false;
-      els.connectionStatus.textContent = joinFailed ? "Kamer niet toegankelijk" : "Verbinding verbroken";
+      setConnectionStatus(joinFailed ? "connection.inaccessible" : "connection.lost");
       els.copyInviteBtn.disabled = true;
       stopTimers();
-      addLog("Verbinding gesloten.");
+      addLog(translate("error.connectionClosed"), "error");
       renderAll();
     };
     state.socket.onerror = () => {
-      addLog("WebSocket fout.");
+      addLog(translate("error.websocket"), "error");
     };
     state.socket.onmessage = (event) => {
       try {
@@ -1135,13 +1471,18 @@ async function connect() {
         if (msg.type === "ack" && msg.ackId === joinAckId) {
           if (!msg.success) {
             joinFailed = true;
-            addLog(`Kamer joinen mislukt: ${msg.error?.message || "toegang geweigerd."}`);
+            addLog(
+              translate("error.joinFailed", {
+                reason: msg.error?.message || translate("error.accessDenied")
+              }),
+              "error"
+            );
             state.socket.close();
             return;
           }
           state.connected = true;
-          els.connectionStatus.textContent = "Verbonden";
-          showToast("Verbonden met de lobby.", "success");
+          setConnectionStatus("connection.connected");
+          showToast(translate("connection.connected"), "success");
           sendPresence();
           requestState();
           startTimers();
@@ -1149,19 +1490,24 @@ async function connect() {
           return;
         }
         if (msg.type === "ack" && !msg.success) {
-          addLog(`Bericht versturen mislukt: ${msg.error?.message || "onbekende fout."}`);
+          addLog(
+            translate("error.sendFailed", {
+              reason: msg.error?.message || translate("error.unknown")
+            }),
+            "error"
+          );
           return;
         }
         if (msg.type === "message" && msg.dataType === "json") {
           handleGroupMessage(msg.data);
         }
       } catch {
-        addLog("Onverwacht bericht ontvangen.");
+        addLog(translate("error.unexpected"), "error");
       }
     };
   } catch (err) {
-    addLog(`Verbinding mislukt: ${err.message}`);
-    els.connectionStatus.textContent = "Niet verbonden";
+    addLog(translate("error.connectionFailed", { reason: err.message }), "error");
+    setConnectionStatus("connection.disconnected");
   } finally {
     els.connectBtn.disabled = false;
   }
@@ -1177,9 +1523,9 @@ async function copyInviteLink() {
   inviteUrl.searchParams.set("host", state.localPlayer.id);
   try {
     await navigator.clipboard.writeText(inviteUrl.toString());
-    addLog("Uitnodigingslink gekopieerd. Deel deze met andere spelers.");
+    addLog(translate("error.inviteCopied"), "success");
   } catch (error) {
-    addLog(`Uitnodigingslink kopiëren mislukt: ${error.message}`);
+    addLog(translate("error.inviteCopyFailed", { reason: error.message }), "error");
   }
 }
 
@@ -1187,7 +1533,7 @@ function startGame() {
   if (!state.isHost || !state.connected) return;
   const players = sortPlayerEntries(state.players).map((p) => p.id);
   if (players.length < 2) {
-    addLog("Minimaal 2 spelers nodig.");
+    addLog(translate("error.minPlayers"), "error");
     return;
   }
   state.game = initialGameFromPlayers(players);
@@ -1206,7 +1552,11 @@ els.roomCode.value = inviteRoomCode || generateRoomCode();
 els.connectBtn.addEventListener("click", connect);
 els.copyInviteBtn.addEventListener("click", copyInviteLink);
 els.startGameBtn.addEventListener("click", startGame);
+els.languageButtons.forEach((button) => {
+  button.addEventListener("click", () => setLanguage(button.dataset.language));
+});
 
+applyStaticTranslations();
 loadAppVersion();
 resetGameUi();
 renderTerritories();
