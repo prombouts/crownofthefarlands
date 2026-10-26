@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.2.1...crown-of-the-farlands-v1.3.0) (2026-10-26)
+
+
+### Features
+
+* improve game controls and map feedback ([5225e31](https://github.com/prombouts/riskonline/commit/5225e3182b92ad88f6d7af04a45b134ecce94526))
+
+
+### Bug Fixes
+
+* Insecure randomness ([a947a73](https://github.com/prombouts/riskonline/commit/a947a733431914ed22b75d3f59d19fd1611d3055))
+
 ## [1.2.1](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.2.0...crown-of-the-farlands-v1.2.1) (2026-10-26)
 
 
