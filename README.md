@@ -50,7 +50,7 @@ stelt `WEB_PUBSUB_CONNECTION_STRING` en `WEB_PUBSUB_HUB` automatisch in.
 
 1. Maak de resource group en een Azure app registration/service principal.
    Koppel een federated credential aan
-   `repo:prombouts/riskonline:ref:refs/heads/main` en geef de service principal
+   `repo:prombouts/crownofthefarlands:ref:refs/heads/main` en geef de service principal
    **Contributor**-rechten op alleen die resource group. Bijvoorbeeld met Azure
    CLI (voer dit uit in Bash en vervang `<resource-group>`):
 
@@ -59,12 +59,12 @@ stelt `WEB_PUBSUB_CONNECTION_STRING` en `WEB_PUBSUB_HUB` automatisch in.
    SUBSCRIPTION_ID="$(az account show --query id -o tsv)"
    TENANT_ID="$(az account show --query tenantId -o tsv)"
    az group create --name "$RG" --location westeurope
-   CLIENT_ID="$(az ad app create --display-name riskonline-github-actions --query appId -o tsv)"
+   CLIENT_ID="$(az ad app create --display-name crownofthefarlands-github-actions --query appId -o tsv)"
    SP_OBJECT_ID="$(az ad sp create --id "$CLIENT_ID" --query id -o tsv)"
    az ad app federated-credential create --id "$CLIENT_ID" --parameters "{
      \"name\":\"github-main\",
      \"issuer\":\"https://token.actions.githubusercontent.com\",
-     \"subject\":\"repo:prombouts/riskonline:ref:refs/heads/main\",
+     \"subject\":\"repo:prombouts/crownofthefarlands:ref:refs/heads/main\",
      \"description\":\"GitHub Actions deployment from main\",
      \"audiences\":[\"api://AzureADTokenExchange\"]
    }"
