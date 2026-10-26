@@ -325,6 +325,75 @@ h2 {
   transition: fill 180ms ease;
 }
 
+.territory-marker.has-capture-effect {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: territory-captured 850ms ease-out both;
+}
+
+.territory-marker.has-capture-effect .territory-label-bg {
+  animation: capture-label-flash 850ms ease-out both;
+}
+
+.territory-marker.has-army-effect .territory-token {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: army-deployed 650ms ease-out both;
+}
+
+@keyframes territory-captured {
+  0% {
+    transform: scale(0.9);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+
+  32% {
+    transform: scale(1.14);
+    filter: drop-shadow(0 0 8px var(--territory-color));
+  }
+
+  65% {
+    transform: scale(0.98);
+    filter: drop-shadow(0 0 4px var(--territory-color));
+  }
+
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+}
+
+@keyframes capture-label-flash {
+  0%,
+  100% {
+    stroke: #f0d99b;
+    stroke-width: 1;
+  }
+
+  32%,
+  62% {
+    stroke: var(--territory-color);
+    stroke-width: 4;
+  }
+}
+
+@keyframes army-deployed {
+  0% {
+    transform: scale(0.8);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+
+  42% {
+    transform: scale(1.45);
+    filter: drop-shadow(0 0 7px var(--brass));
+  }
+
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+}
+
 .territory-label-bg {
   fill: #183842;
   fill-opacity: 0.94;
@@ -537,6 +606,98 @@ button:focus-visible {
   margin-bottom: 0.7rem;
 }
 
+#game-panel .inline-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+.action-choice-group {
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+}
+
+.action-choice-heading {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.action-choice-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+  gap: 0.35rem;
+}
+
+.action-choice-button {
+  display: flex;
+  width: auto;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #a9a18c;
+  border-radius: 7px;
+  background: #fffcf3;
+  color: var(--ink);
+  font-size: 0.84rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.action-choice-button:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: #eee7d6;
+  color: var(--ink);
+}
+
+.action-choice-button.is-selected,
+.action-choice-button.is-selected:hover:not(:disabled) {
+  border-color: #96743b;
+  background: var(--land-light);
+  color: var(--ocean-deep);
+  box-shadow: inset 0 0 0 1px rgb(150 116 59 / 28%);
+}
+
+.action-choice-button:disabled {
+  opacity: 0.38;
+}
+
+.dice-toggle {
+  display: grid;
+  width: max-content;
+  max-width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.2rem;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #eee7d6;
+}
+
+.action-choice-button.dice-option-button {
+  min-width: 3.35rem;
+  padding: 0.4rem 0.55rem;
+  border-color: transparent;
+  border-radius: 6px;
+}
+
+.dice-option-button svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+}
+
+.action-choice-button.dice-option-button.is-selected,
+.action-choice-button.dice-option-button.is-selected:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff8e8;
+  box-shadow: 0 1px 3px rgb(16 37 45 / 24%);
+}
+
 .log-list {
   margin: 0;
   padding-left: 1.2rem;
@@ -637,6 +798,10 @@ button:focus-visible {
     min-width: 0;
   }
 
+  #game-panel .action-choice-options > button {
+    width: auto;
+  }
+
   .game-sidebar .log-list {
     max-height: 12rem;
   }
@@ -713,6 +878,7 @@ button:focus-visible {
   *,
   *::before,
   *::after {
+    animation: none !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }

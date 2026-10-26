@@ -91,6 +91,7 @@ let heartbeatTimer = null;
 let presenceTimer = null;
 let stateSyncTimer = null;
 let gameWasStarted = false;
+let renderedTerritoryVisuals = null;
 const toastTimers = new WeakMap();
 
 function randomId() {
@@ -231,6 +232,8 @@ function renderPlayers() {
 
 function renderTerritories() {
   const game = state.game;
+  const previousVisuals = renderedTerritoryVisuals;
+  const nextVisuals = game ? {} : null;
   els.mapRoutes.replaceChildren();
   els.territoryList.replaceChildren();
 
@@ -253,6 +256,11 @@ function renderTerritories() {
   for (const t of TERRITORIES) {
     const owner = game?.territories?.[t.id]?.ownerId || "niemand";
     const armies = game?.territories?.[t.id]?.armies ?? 0;
+    const previous = previousVisuals?.[t.id];
+    const wasCaptured = Boolean(previous && previous.ownerId !== owner);
+    const armiesIncreased = Boolean(previous && previous.ownerId === owner && armies > previous.armies);
+    if (nextVisuals) nextVisuals[t.id] = { ownerId: owner, armies };
+
     const ownerPlayer = state.players[owner];
     const canPlaceReinforcement = Boolean(
       game &&
@@ -263,7 +271,10 @@ function renderTerritories() {
     );
     const territoryLabel = `${t.naam}: ${ownerPlayer?.name || "neutraal"}, ${armies} legers`;
     const marker = createSvgElement("g", {
-      class: `territory-marker${ownerPlayer ? " is-owned" : ""}${canPlaceReinforcement ? " is-selectable" : ""}`,
+      class:
+        `territory-marker${ownerPlayer ? " is-owned" : ""}` +
+        `${canPlaceReinforcement ? " is-selectable" : ""}` +
+        `${wasCaptured ? " has-capture-effect" : armiesIncreased ? " has-army-effect" : ""}`,
       role: canPlaceReinforcement ? "button" : "img",
       ...(canPlaceReinforcement ? { tabindex: 0 } : {}),
       "aria-label": canPlaceReinforcement
@@ -340,6 +351,8 @@ function renderTerritories() {
     armyCount.textContent = game ? String(armies) : "·";
     marker.appendChild(armyCount);
   }
+
+  renderedTerritoryVisuals = nextVisuals;
 }
 
 function createSvgElement(tagName, attributes = {}) {
@@ -391,15 +404,119 @@ function neighborsOf(territoryId) {
   return territoryById(territoryId)?.buren || [];
 }
 
+function createDieIcon(value) {
+  const icon = document.createElementNS(SVG_NS, "svg");
+  icon.setAttribute("viewBox", "0 0 24 24");
+  icon.setAttribute("aria-hidden", "true");
+  icon.setAttribute("focusable", "false");
+
+  const face = document.createElementNS(SVG_NS, "rect");
+  face.setAttribute("x", "2");
+  face.setAttribute("y", "2");
+  face.setAttribute("width", "20");
+  face.setAttribute("height", "20");
+  face.setAttribute("rx", "4");
+  face.setAttribute("fill", "none");
+  face.setAttribute("stroke", "currentColor");
+  face.setAttribute("stroke-width", "1.75");
+  icon.appendChild(face);
+
+  const pips = {
+    1: [[12, 12]],
+    2: [[7, 7], [17, 17]],
+    3: [[7, 7], [12, 12], [17, 17]]
+  }[value] || [];
+  for (const [cx, cy] of pips) {
+    const pip = document.createElementNS(SVG_NS, "circle");
+    pip.setAttribute("cx", String(cx));
+    pip.setAttribute("cy", String(cy));
+    pip.setAttribute("r", "1.5");
+    pip.setAttribute("fill", "currentColor");
+    icon.appendChild(pip);
+  }
+  return icon;
+}
+
+function createChoiceGroup(label, options, selectedValue, onSelect, optionsClassName = "") {
+  const field = document.createElement("div");
+  field.className = "action-choice-group";
+
+  const heading = document.createElement("span");
+  heading.className = "action-choice-heading";
+  heading.textContent = label;
+
+  const choices = document.createElement("div");
+  choices.className = `action-choice-options ${optionsClassName}`.trim();
+  choices.setAttribute("role", "group");
+  choices.setAttribute("aria-label", label);
+
+  let currentValue = selectedValue;
+
+  function updateSelected() {
+    for (const button of choices.querySelectorAll("button")) {
+      const selected = button.dataset.value === currentValue;
+      button.classList.toggle("is-selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    }
+  }
+
+  function setOptions(nextOptions, preferredValue = currentValue) {
+    currentValue = nextOptions.some((option) => option.value === preferredValue)
+      ? preferredValue
+      : nextOptions[0]?.value ?? null;
+    choices.replaceChildren();
+
+    for (const option of nextOptions) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `action-choice-button${option.className ? ` ${option.className}` : ""}`;
+      button.dataset.value = option.value;
+      button.disabled = Boolean(option.disabled);
+      button.setAttribute("aria-label", option.ariaLabel || option.label);
+      button.setAttribute("aria-pressed", String(option.value === currentValue));
+      if (option.icon) button.appendChild(option.icon);
+      if (option.label) {
+        const text = document.createElement("span");
+        text.textContent = option.label;
+        button.appendChild(text);
+      }
+      button.addEventListener("click", () => {
+        currentValue = option.value;
+        updateSelected();
+        onSelect(currentValue);
+      });
+      choices.appendChild(button);
+    }
+
+    updateSelected();
+  }
+
+  field.append(heading, choices);
+  setOptions(options, selectedValue);
+
+  return {
+    element: field,
+    get value() {
+      return currentValue;
+    },
+    setOptions
+  };
+}
+
+function selectedChoice(container, groupName) {
+  return container.querySelector(`[data-choice-group="${groupName}"] .action-choice-button.is-selected`)
+    ?.dataset.value;
+}
+
 function renderActionPanels() {
   const attackSelection = {
-    fromId: els.attackControls.querySelector('[aria-label="Aanvallen vanuit"]')?.value,
-    toId: els.attackControls.querySelector('[aria-label="Aanvallen naar"]')?.value,
-    attackDice: els.attackControls.querySelector('[aria-label="Aantal dobbelstenen"]')?.value
+    fromId: selectedChoice(els.attackControls, "attack-from"),
+    toId: selectedChoice(els.attackControls, "attack-to"),
+    attackDice: selectedChoice(els.attackControls, "attack-dice")
   };
   const fortifySelection = {
-    fromId: els.fortifyControls.querySelector('[aria-label="Verplaatsen vanuit"]')?.value,
-    toId: els.fortifyControls.querySelector('[aria-label="Verplaatsen naar"]')?.value,
+    fromId: selectedChoice(els.fortifyControls, "fortify-from"),
+    toId: selectedChoice(els.fortifyControls, "fortify-to"),
     armies: els.fortifyControls.querySelector('[aria-label="Aantal legers"]')?.value
   };
   els.phaseActions.innerHTML = "";
@@ -469,75 +586,95 @@ function renderAttackControls(selection = {}) {
     return;
   }
 
-  const fromSelect = document.createElement("select");
-  fromSelect.setAttribute("aria-label", "Aanvallen vanuit");
-  for (const id of fromCandidates) {
-    const o = document.createElement("option");
-    o.value = id;
-    o.textContent = territoryById(id).naam;
-    fromSelect.appendChild(o);
-  }
-  if (fromCandidates.includes(selection.fromId)) fromSelect.value = selection.fromId;
+  let fromId = fromCandidates.includes(selection.fromId) ? selection.fromId : fromCandidates[0];
+  let toId = selection.toId;
+  let diceCount = Number(selection.attackDice) || 1;
+  let toGroup;
+  let diceGroup;
+  const diceOptions = [1, 2, 3].map((value) => ({
+    value: String(value),
+    label: String(value),
+    ariaLabel: `${value} ${value === 1 ? "dobbelsteen" : "dobbelstenen"}`,
+    icon: createDieIcon(value),
+    className: "dice-option-button"
+  }));
+  const fromGroup = createChoiceGroup(
+    "Aanvallen vanuit",
+    fromCandidates.map((id) => ({ value: id, label: territoryById(id).naam })),
+    fromId,
+    (id) => {
+      fromId = id;
+      refreshToOptions();
+    }
+  );
 
-  const toSelect = document.createElement("select");
-  toSelect.setAttribute("aria-label", "Aanvallen naar");
-  const diceSelect = document.createElement("select");
-  diceSelect.setAttribute("aria-label", "Aantal dobbelstenen");
-  [1, 2, 3].forEach((d) => {
-    const o = document.createElement("option");
-    o.value = String(d);
-    o.textContent = `${d} dobbelsteen${d > 1 ? "en" : ""}`;
-    diceSelect.appendChild(o);
-  });
-  if (selection.attackDice) diceSelect.value = selection.attackDice;
-
-  function refreshToOptions(preferredToId = toSelect.value) {
-    const fromId = fromSelect.value;
-    toSelect.innerHTML = "";
+  function refreshToOptions() {
     const enemyNeighbors = neighborsOf(fromId).filter(
       (nb) => state.game.territories[nb].ownerId !== state.localPlayer.id
     );
-    for (const id of enemyNeighbors) {
-      const o = document.createElement("option");
-      o.value = id;
-      o.textContent = territoryById(id).naam;
-      toSelect.appendChild(o);
-    }
-    if (enemyNeighbors.includes(preferredToId)) toSelect.value = preferredToId;
+    toGroup.setOptions(
+      enemyNeighbors.map((id) => ({ value: id, label: territoryById(id).naam })),
+      toId
+    );
+    toId = toGroup.value;
+
     const maxDice = Math.min(3, state.game.territories[fromId].armies - 1);
-    Array.from(diceSelect.options).forEach((opt) => {
-      opt.disabled = Number(opt.value) > maxDice;
-    });
-    if (Number(diceSelect.value) > maxDice) {
-      diceSelect.value = String(maxDice);
-    }
+    if (diceCount > maxDice) diceCount = maxDice;
+    diceGroup.setOptions(
+      diceOptions.map((option) => ({
+        ...option,
+        disabled: Number(option.value) > maxDice
+      })),
+      String(diceCount)
+    );
   }
 
-  fromSelect.onchange = () => refreshToOptions(toSelect.value);
-  refreshToOptions(selection.toId);
+  toGroup = createChoiceGroup(
+    "Aanvallen naar",
+    [],
+    null,
+    (id) => {
+      toId = id;
+    }
+  );
+  diceGroup = createChoiceGroup(
+    "Dobbelstenen",
+    diceOptions,
+    String(diceCount),
+    (value) => {
+      diceCount = Number(value);
+    },
+    "dice-toggle"
+  );
+  refreshToOptions();
 
   const btn = document.createElement("button");
   btn.textContent = "Aanval uitvoeren";
   btn.onclick = () =>
     sendAction({
       kind: "attack",
-      fromId: fromSelect.value,
-      toId: toSelect.value,
-      attackDice: Number(diceSelect.value)
+      fromId,
+      toId,
+      attackDice: diceCount
     });
 
-  els.attackControls.appendChild(fromSelect);
-  els.attackControls.appendChild(toSelect);
-  els.attackControls.appendChild(diceSelect);
+  fromGroup.element.dataset.choiceGroup = "attack-from";
+  toGroup.element.dataset.choiceGroup = "attack-to";
+  diceGroup.element.dataset.choiceGroup = "attack-dice";
+  els.attackControls.appendChild(fromGroup.element);
+  els.attackControls.appendChild(toGroup.element);
+  els.attackControls.appendChild(diceGroup.element);
   els.attackControls.appendChild(btn);
 }
 
 function renderFortifyControls(selection = {}) {
   const myId = state.localPlayer.id;
-  const fromCandidates = ownedTerritories(myId).filter((tid) => state.game.territories[tid].armies > 1);
-  const toCandidates = ownedTerritories(myId);
+  const fromCandidates = ownedTerritories(myId).filter((tid) =>
+    state.game.territories[tid].armies > 1 &&
+    neighborsOf(tid).some((neighborId) => state.game.territories[neighborId].ownerId === myId)
+  );
 
-  if (fromCandidates.length < 1 || toCandidates.length < 2) {
+  if (!fromCandidates.length) {
     const msg = document.createElement("span");
     msg.className = "status";
     msg.textContent = "Geen geldige verplaatsing beschikbaar.";
@@ -545,55 +682,63 @@ function renderFortifyControls(selection = {}) {
     return;
   }
 
-  const fromSelect = document.createElement("select");
-  const toSelect = document.createElement("select");
   const countInput = document.createElement("input");
-  fromSelect.setAttribute("aria-label", "Verplaatsen vanuit");
-  toSelect.setAttribute("aria-label", "Verplaatsen naar");
   countInput.type = "number";
   countInput.min = "1";
   countInput.value = "1";
   countInput.setAttribute("aria-label", "Aantal legers");
   if (selection.armies) countInput.value = selection.armies;
 
-  for (const id of fromCandidates) {
-    const o = document.createElement("option");
-    o.value = id;
-    o.textContent = territoryById(id).naam;
-    fromSelect.appendChild(o);
-  }
-  if (fromCandidates.includes(selection.fromId)) fromSelect.value = selection.fromId;
-
-  function refreshToCandidates(preferredToId = toSelect.value) {
-    const fromId = fromSelect.value;
-    toSelect.innerHTML = "";
-    const valid = neighborsOf(fromId).filter((id) => state.game.territories[id].ownerId === myId);
-    for (const id of valid) {
-      const o = document.createElement("option");
-      o.value = id;
-      o.textContent = territoryById(id).naam;
-      toSelect.appendChild(o);
+  let fromId = fromCandidates.includes(selection.fromId) ? selection.fromId : fromCandidates[0];
+  let toId = selection.toId;
+  let toGroup;
+  const fromGroup = createChoiceGroup(
+    "Verplaatsen vanuit",
+    fromCandidates.map((id) => ({ value: id, label: territoryById(id).naam })),
+    fromId,
+    (id) => {
+      fromId = id;
+      refreshToCandidates();
     }
-    if (valid.includes(preferredToId)) toSelect.value = preferredToId;
+  );
+
+  function refreshToCandidates() {
+    const valid = neighborsOf(fromId).filter((id) => state.game.territories[id].ownerId === myId);
+    toGroup.setOptions(
+      valid.map((id) => ({ value: id, label: territoryById(id).naam })),
+      toId
+    );
+    toId = toGroup.value;
+
     const maxMove = Math.max(1, state.game.territories[fromId].armies - 1);
     countInput.max = String(maxMove);
     if (Number(countInput.value) > maxMove) countInput.value = String(maxMove);
   }
-  fromSelect.onchange = () => refreshToCandidates(toSelect.value);
-  refreshToCandidates(selection.toId);
+
+  toGroup = createChoiceGroup(
+    "Verplaatsen naar",
+    [],
+    null,
+    (id) => {
+      toId = id;
+    }
+  );
+  refreshToCandidates();
 
   const btn = document.createElement("button");
   btn.textContent = "Verplaatsen";
   btn.onclick = () =>
     sendAction({
       kind: "fortify",
-      fromId: fromSelect.value,
-      toId: toSelect.value,
+      fromId,
+      toId,
       armies: Number(countInput.value)
     });
 
-  els.fortifyControls.appendChild(fromSelect);
-  els.fortifyControls.appendChild(toSelect);
+  fromGroup.element.dataset.choiceGroup = "fortify-from";
+  toGroup.element.dataset.choiceGroup = "fortify-to";
+  els.fortifyControls.appendChild(fromGroup.element);
+  els.fortifyControls.appendChild(toGroup.element);
   els.fortifyControls.appendChild(countInput);
   els.fortifyControls.appendChild(btn);
 }
