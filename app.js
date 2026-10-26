@@ -392,6 +392,16 @@ function neighborsOf(territoryId) {
 }
 
 function renderActionPanels() {
+  const attackSelection = {
+    fromId: els.attackControls.querySelector('[aria-label="Aanvallen vanuit"]')?.value,
+    toId: els.attackControls.querySelector('[aria-label="Aanvallen naar"]')?.value,
+    attackDice: els.attackControls.querySelector('[aria-label="Aantal dobbelstenen"]')?.value
+  };
+  const fortifySelection = {
+    fromId: els.fortifyControls.querySelector('[aria-label="Verplaatsen vanuit"]')?.value,
+    toId: els.fortifyControls.querySelector('[aria-label="Verplaatsen naar"]')?.value,
+    armies: els.fortifyControls.querySelector('[aria-label="Aantal legers"]')?.value
+  };
   els.phaseActions.innerHTML = "";
   els.attackControls.innerHTML = "";
   els.fortifyControls.innerHTML = "";
@@ -412,7 +422,7 @@ function renderActionPanels() {
 
   if (phase === "aanvallen") {
     if (canControl) {
-      renderAttackControls();
+      renderAttackControls(attackSelection);
     } else {
       const waiting = document.createElement("span");
       waiting.className = "status";
@@ -428,7 +438,7 @@ function renderActionPanels() {
 
   if (phase === "verplaatsen") {
     if (canControl) {
-      renderFortifyControls();
+      renderFortifyControls(fortifySelection);
     } else {
       const waiting = document.createElement("span");
       waiting.className = "status";
@@ -443,7 +453,7 @@ function renderActionPanels() {
   }
 }
 
-function renderAttackControls() {
+function renderAttackControls(selection = {}) {
   const myId = state.localPlayer.id;
   const fromCandidates = ownedTerritories(myId).filter((tid) => {
     const territory = state.game.territories[tid];
@@ -467,6 +477,7 @@ function renderAttackControls() {
     o.textContent = territoryById(id).naam;
     fromSelect.appendChild(o);
   }
+  if (fromCandidates.includes(selection.fromId)) fromSelect.value = selection.fromId;
 
   const toSelect = document.createElement("select");
   toSelect.setAttribute("aria-label", "Aanvallen naar");
@@ -478,8 +489,9 @@ function renderAttackControls() {
     o.textContent = `${d} dobbelsteen${d > 1 ? "en" : ""}`;
     diceSelect.appendChild(o);
   });
+  if (selection.attackDice) diceSelect.value = selection.attackDice;
 
-  function refreshToOptions() {
+  function refreshToOptions(preferredToId = toSelect.value) {
     const fromId = fromSelect.value;
     toSelect.innerHTML = "";
     const enemyNeighbors = neighborsOf(fromId).filter(
@@ -491,6 +503,7 @@ function renderAttackControls() {
       o.textContent = territoryById(id).naam;
       toSelect.appendChild(o);
     }
+    if (enemyNeighbors.includes(preferredToId)) toSelect.value = preferredToId;
     const maxDice = Math.min(3, state.game.territories[fromId].armies - 1);
     Array.from(diceSelect.options).forEach((opt) => {
       opt.disabled = Number(opt.value) > maxDice;
@@ -500,8 +513,8 @@ function renderAttackControls() {
     }
   }
 
-  fromSelect.onchange = refreshToOptions;
-  refreshToOptions();
+  fromSelect.onchange = () => refreshToOptions(toSelect.value);
+  refreshToOptions(selection.toId);
 
   const btn = document.createElement("button");
   btn.textContent = "Aanval uitvoeren";
@@ -519,7 +532,7 @@ function renderAttackControls() {
   els.attackControls.appendChild(btn);
 }
 
-function renderFortifyControls() {
+function renderFortifyControls(selection = {}) {
   const myId = state.localPlayer.id;
   const fromCandidates = ownedTerritories(myId).filter((tid) => state.game.territories[tid].armies > 1);
   const toCandidates = ownedTerritories(myId);
@@ -541,6 +554,7 @@ function renderFortifyControls() {
   countInput.min = "1";
   countInput.value = "1";
   countInput.setAttribute("aria-label", "Aantal legers");
+  if (selection.armies) countInput.value = selection.armies;
 
   for (const id of fromCandidates) {
     const o = document.createElement("option");
@@ -548,8 +562,9 @@ function renderFortifyControls() {
     o.textContent = territoryById(id).naam;
     fromSelect.appendChild(o);
   }
+  if (fromCandidates.includes(selection.fromId)) fromSelect.value = selection.fromId;
 
-  function refreshToCandidates() {
+  function refreshToCandidates(preferredToId = toSelect.value) {
     const fromId = fromSelect.value;
     toSelect.innerHTML = "";
     const valid = neighborsOf(fromId).filter((id) => state.game.territories[id].ownerId === myId);
@@ -559,12 +574,13 @@ function renderFortifyControls() {
       o.textContent = territoryById(id).naam;
       toSelect.appendChild(o);
     }
+    if (valid.includes(preferredToId)) toSelect.value = preferredToId;
     const maxMove = Math.max(1, state.game.territories[fromId].armies - 1);
     countInput.max = String(maxMove);
     if (Number(countInput.value) > maxMove) countInput.value = String(maxMove);
   }
-  fromSelect.onchange = refreshToCandidates;
-  refreshToCandidates();
+  fromSelect.onchange = () => refreshToCandidates(toSelect.value);
+  refreshToCandidates(selection.toId);
 
   const btn = document.createElement("button");
   btn.textContent = "Verplaatsen";
