@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.4.0...crown-of-the-farlands-v1.4.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* preserve version across language switches ([0a16007](https://github.com/prombouts/riskonline/commit/0a16007b9243af2db91d7957975ebee358e180d5))
+
 ## [1.4.0](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.3.0...crown-of-the-farlands-v1.4.0) (2026-10-26)
 
 
