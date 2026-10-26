@@ -27,7 +27,13 @@
             data-i18n-aria-label="language.switchDutch"
             aria-label="Schakel naar Nederlands"
             aria-pressed="true"
-          ><span aria-hidden="true">🇳🇱</span></button>
+          >
+            <svg class="country-flag" viewBox="0 0 24 16" aria-hidden="true" focusable="false">
+              <rect width="24" height="16" fill="#21468b" />
+              <path fill="#fff" d="M0 0h24v10.67H0z" />
+              <path fill="#ae1c28" d="M0 0h24v5.33H0z" />
+            </svg>
+          </button>
           <button
             class="language-button"
             type="button"
@@ -36,7 +42,15 @@
             data-i18n-aria-label="language.switchEnglish"
             aria-label="Schakel naar Engels"
             aria-pressed="false"
-          ><span aria-hidden="true">🇬🇧</span></button>
+          >
+            <svg class="country-flag" viewBox="0 0 24 16" aria-hidden="true" focusable="false">
+              <rect width="24" height="16" fill="#012169" />
+              <path d="M0 0 24 16M24 0 0 16" stroke="#fff" stroke-width="4" />
+              <path d="M0 0 24 16M24 0 0 16" stroke="#c8102e" stroke-width="1.6" />
+              <path d="M12 0v16M0 8h24" stroke="#fff" stroke-width="6" />
+              <path d="M12 0v16M0 8h24" stroke="#c8102e" stroke-width="3.2" />
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -192,7 +206,7 @@
 
     <footer class="site-footer">
       <span><span data-i18n="connection.version">Versie</span> <span id="app-version" aria-live="polite" data-i18n="connection.loading">Laden...</span></span>
-      <span><span data-i18n="connection.builtBy">Gebouwd door</span> <a href="https://peterrombouts.nl">Peter Rombouts</a></span>
+      <span><span data-i18n="connection.builtBy">Gebouwd door</span> <a href="https://peterrombouts.nl" target="_blank" rel="noopener noreferrer">Peter Rombouts</a></span>
     </footer>
 
     <script src="app.js"></script>

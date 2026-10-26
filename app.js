@@ -299,6 +299,7 @@ const STATE_SYNC_INTERVAL_MS = 8000;
 const state = {
   language: getPreferredLanguage(),
   connectionStatusKey: "connection.disconnected",
+  appVersion: { status: "loading" },
   localPlayer: null,
   roomCode: null,
   socket: null,
@@ -346,6 +347,14 @@ let gameWasStarted = false;
 let renderedTerritoryVisuals = null;
 const toastTimers = new WeakMap();
 
+function renderAppVersion() {
+  const version = state.appVersion;
+  els.appVersion.textContent =
+    version.status === "ready"
+      ? version.value
+      : translate(version.status === "error" ? "error.versionUnknown" : "connection.loading");
+}
+
 function applyStaticTranslations() {
   document.documentElement.lang = state.language === "en" ? "en-GB" : "nl";
   document.title = translate("page.title");
@@ -365,6 +374,7 @@ function applyStaticTranslations() {
   for (const button of els.languageButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.language === state.language));
   }
+  renderAppVersion();
   setConnectionStatus(state.connectionStatusKey);
 }
 
@@ -409,9 +419,11 @@ async function loadAppVersion() {
     if (typeof packageInfo.version !== "string" || !/^\d+\.\d+\.\d+$/.test(packageInfo.version)) {
       throw new Error(translate("error.versionInvalid"));
     }
-    els.appVersion.textContent = `v${packageInfo.version}`;
+    state.appVersion = { status: "ready", value: `v${packageInfo.version}` };
+    renderAppVersion();
   } catch (error) {
-    els.appVersion.textContent = translate("error.versionUnknown");
+    state.appVersion = { status: "error" };
+    renderAppVersion();
     console.error("Versie laden mislukt.", error);
   }
 }
