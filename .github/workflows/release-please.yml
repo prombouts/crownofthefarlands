@@ -10,11 +10,23 @@ permissions:
   pull-requests: write
 
 jobs:
-  release-please:
+  release_please:
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     runs-on: ubuntu-latest
     steps:
       - name: Create or update release pull request
+        id: release
         uses: googleapis/release-please-action@v4
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  deploy:
+    needs: release_please
+    if: needs.release_please.outputs.release_created == 'true'
+    uses: ./.github/workflows/deploy-app.yml
+    with:
+      release_tag: ${{ needs.release_please.outputs.tag_name }}
+    secrets: inherit
