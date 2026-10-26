@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.3.0...crown-of-the-farlands-v1.4.0) (2026-10-26)
+
+
+### Features
+
+* Added localisaton ([3d4c715](https://github.com/prombouts/riskonline/commit/3d4c71524a2b18ede7c9c4cd6178d8dad606f29f))
+
 ## [1.3.0](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.2.1...crown-of-the-farlands-v1.3.0) (2026-10-26)
 
 
