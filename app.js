@@ -747,14 +747,21 @@ function applyHostAction(message) {
   const turnPlayer = game.turnOrder[game.turnIndex];
   if (actorId !== turnPlayer) return;
 
+  const territoryIds = new Set(TERRITORIES.map((t) => t.id));
+  const reinforceTerritoryId =
+    typeof action.territoryId === "string" && territoryIds.has(action.territoryId) ? action.territoryId : null;
+  const fromId = typeof action.fromId === "string" && territoryIds.has(action.fromId) ? action.fromId : null;
+  const toId = typeof action.toId === "string" && territoryIds.has(action.toId) ? action.toId : null;
+
   let changed = false;
 
   if (action.kind === "reinforce" && game.phase === "versterken" && game.reinforcementsLeft > 0) {
-    const territory = game.territories[action.territoryId];
+    if (!reinforceTerritoryId) return;
+    const territory = game.territories[reinforceTerritoryId];
     if (territory && territory.ownerId === actorId) {
       territory.armies += 1;
       game.reinforcementsLeft -= 1;
-      appendGameLog(game, `${playerLabel(actorId)} versterkt ${territoryById(action.territoryId).naam}.`);
+      appendGameLog(game, `${playerLabel(actorId)} versterkt ${territoryById(reinforceTerritoryId).naam}.`);
       changed = true;
       if (game.reinforcementsLeft <= 0) {
         game.phase = "aanvallen";
@@ -763,9 +770,10 @@ function applyHostAction(message) {
   }
 
   if (action.kind === "attack" && game.phase === "aanvallen") {
-    const from = game.territories[action.fromId];
-    const to = game.territories[action.toId];
-    const isNeighbor = neighborsOf(action.fromId).includes(action.toId);
+    if (!fromId || !toId) return;
+    const from = game.territories[fromId];
+    const to = game.territories[toId];
+    const isNeighbor = neighborsOf(fromId).includes(toId);
     if (!from || !to || !isNeighbor || from.ownerId !== actorId || to.ownerId === actorId) return;
     const maxAttackDice = Math.min(3, from.armies - 1);
     const attackDice = Math.min(Math.max(1, action.attackDice || 1), maxAttackDice);
@@ -783,7 +791,7 @@ function applyHostAction(message) {
 
     appendGameLog(
       game,
-      `${playerLabel(actorId)} valt ${territoryById(action.toId).naam} aan (${aRoll.join(",")} vs ${dRoll.join(",")}).`
+      `${playerLabel(actorId)} valt ${territoryById(toId).naam} aan (${aRoll.join(",")} vs ${dRoll.join(",")}).`
     );
     changed = true;
 
@@ -792,7 +800,7 @@ function applyHostAction(message) {
       to.ownerId = actorId;
       to.armies = moveArmies;
       from.armies -= moveArmies;
-      appendGameLog(game, `${playerLabel(actorId)} verovert ${territoryById(action.toId).naam}.`);
+      appendGameLog(game, `${playerLabel(actorId)} verovert ${territoryById(toId).naam}.`);
       const winner = checkWinner(game);
       if (winner) {
         game.winnerId = winner;
