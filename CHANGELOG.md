@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.2.0...crown-of-the-farlands-v1.2.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* preserve selections in attack and movement controls ([2c69f09](https://github.com/prombouts/riskonline/commit/2c69f091df0bdca7e6999950eaedd477f05945bd))
+
 ## [1.2.0](https://github.com/prombouts/riskonline/compare/crown-of-the-farlands-v1.1.0...crown-of-the-farlands-v1.2.0) (2026-10-25)
 
 
