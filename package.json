@@ -2,5 +2,11 @@
   "name": "crown-of-the-farlands",
   "version": "1.4.1",
   "private": true,
-  "description": "A browser-based strategy game."
+  "description": "A browser-based strategy game.",
+  "scripts": {
+    "test": "node --experimental-test-coverage --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  }
 }
