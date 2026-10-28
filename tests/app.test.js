@@ -228,3 +228,27 @@ test("group messages update presence and accept only state syncs addressed to th
   );
   assert.equal(runApp(dom, "state.game.phase"), "versterken");
 });
+
+test("players receive distinct, consistent colours as presence updates arrive", (t) => {
+  const dom = createApp();
+  t.after(() => dom.window.close());
+  runApp(
+    dom,
+    `state.localPlayer = { id: "player-a", name: "Robin", color: "#e74c3c", joinedAt: 1 };
+     state.players = {};
+     for (let index = 0; index < 8; index += 1) {
+       updatePresence({
+         id: \`player-\${String.fromCharCode(97 + index)}\`,
+         name: \`Player \${index}\`,
+         color: "#e74c3c",
+         joinedAt: index + 1
+       });
+     }`
+  );
+
+  const colors = runApp(dom, "Object.values(state.players).map((player) => player.color)");
+  assert.equal(new Set(colors).size, colors.length);
+  assert.equal(runApp(dom, "state.localPlayer.color"), runApp(dom, 'state.players["player-a"].color'));
+  assert.match(colors[6], /^hsl\(/);
+  assert.match(colors[7], /^hsl\(/);
+});

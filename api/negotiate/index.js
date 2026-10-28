@@ -1,6 +1,7 @@
 const { WebPubSubServiceClient } = require("@azure/web-pubsub");
 const { randomBytes } = require("crypto");
 
+const MAX_ROOM_PLAYERS = 4;
 const PLAYER_COLORS = ["#e74c3c", "#f39c12", "#2ecc71", "#3498db", "#9b59b6", "#1abc9c"];
 
 function randomId(prefix = "") {
@@ -29,6 +30,21 @@ module.exports = async function (request, context) {
 
     const playerId = randomId("p-");
     const serviceClient = new WebPubSubServiceClient(connectionString, hub);
+    if (await serviceClient.groupExists(room)) {
+      const connections = await serviceClient.group(room).listConnections();
+      let playerCount = 0;
+      for await (const _connection of connections) {
+        playerCount += 1;
+        if (playerCount >= MAX_ROOM_PLAYERS) {
+          return {
+            status: 409,
+            headers: { "Cache-Control": "no-store" },
+            jsonBody: { error: "Deze kamer zit vol (maximaal 4 spelers)." }
+          };
+        }
+      }
+    }
+
     const token = await serviceClient.getClientAccessToken({
       userId: playerId,
       roles: ["webpubsub.joinLeaveGroup", "webpubsub.sendToGroup"],

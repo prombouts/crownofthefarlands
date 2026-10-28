@@ -9,6 +9,8 @@ test("negotiate validates input, reports configuration errors, and creates a sco
   let tokenOptions;
   let clientArguments;
   let shouldFailTokenCreation = false;
+  let activeConnections = 0;
+  let tokenCreationCount = 0;
   const originalConnectionString = process.env.WEB_PUBSUB_CONNECTION_STRING;
   const originalHub = process.env.WEB_PUBSUB_HUB;
 
@@ -19,8 +21,25 @@ test("negotiate validates input, reports configuration errors, and creates a sco
 
     async getClientAccessToken(options) {
       if (shouldFailTokenCreation) throw new Error("SDK failure");
+      tokenCreationCount += 1;
       tokenOptions = options;
       return { url: "wss://example.test/client?token=redacted" };
+    }
+
+    async groupExists(group) {
+      assert.equal(group, "amber-citadel-123456");
+      return activeConnections > 0;
+    }
+
+    group(group) {
+      assert.equal(group, "amber-citadel-123456");
+      return {
+        async listConnections() {
+          return (async function* () {
+            for (let index = 0; index < activeConnections; index += 1) yield {};
+          })();
+        }
+      };
     }
   }
 
@@ -49,6 +68,13 @@ test("negotiate validates input, reports configuration errors, and creates a sco
 
     process.env.WEB_PUBSUB_CONNECTION_STRING = "Endpoint=https://example.test;AccessKey=fake";
     process.env.WEB_PUBSUB_HUB = "test-hub";
+    activeConnections = 4;
+    const fullRoom = await negotiate(request("name=Robin&room=amber-citadel-123456"), context);
+    assert.equal(fullRoom.status, 409);
+    assert.deepEqual(fullRoom.jsonBody, { error: "Deze kamer zit vol (maximaal 4 spelers)." });
+    assert.equal(tokenCreationCount, 0);
+
+    activeConnections = 3;
     const response = await negotiate(request("name=%20Robin%20&room=amber-citadel-123456"), context);
     assert.equal(response.status, 200);
     assert.equal(response.headers["Cache-Control"], "no-store");

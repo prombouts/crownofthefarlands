@@ -144,6 +144,7 @@ const TRANSLATIONS = {
     "error.nameRequired": "Vul je naam in.",
     "error.roomMissing": "Er is geen kamercode beschikbaar. Vernieuw de pagina.",
     "error.negotiate": "Verbinden mislukt (fout {status}).",
+    "error.roomFull": "Deze kamer is vol. Er kunnen maximaal 4 spelers meedoen.",
     "error.invalidNegotiate": "Ongeldige verbindingsreactie ontvangen.",
     "error.accessDenied": "toegang geweigerd.",
     "error.joinFailed": "Kamer joinen mislukt: {reason}",
@@ -259,6 +260,7 @@ const TRANSLATIONS = {
     "error.nameRequired": "Enter your name.",
     "error.roomMissing": "No room code is available. Refresh the page.",
     "error.negotiate": "Could not connect (error {status}).",
+    "error.roomFull": "This room is full. A maximum of 4 players can join.",
     "error.invalidNegotiate": "Received an invalid connection response.",
     "error.accessDenied": "access denied.",
     "error.joinFailed": "Could not join the room: {reason}",
@@ -295,6 +297,7 @@ function translate(key, values = {}) {
 const HEARTBEAT_MS = 5000;
 const PRESENCE_TIMEOUT_MS = 20000;
 const STATE_SYNC_INTERVAL_MS = 8000;
+const MAX_ROOM_PLAYERS = 4;
 
 const state = {
   language: getPreferredLanguage(),
@@ -503,7 +506,13 @@ function recomputeHost() {
     : state.hostId
       ? translate("connection.host", { name: playerLabel(state.hostId) })
       : translate("connection.unknownHost");
-  els.startGameBtn.disabled = !(state.isHost && state.connected && !state.game && entries.length >= 2);
+  els.startGameBtn.disabled = !(
+    state.isHost &&
+    state.connected &&
+    !state.game &&
+    entries.length >= 2 &&
+    entries.length <= MAX_ROOM_PLAYERS
+  );
   els.copyInviteBtn.disabled = !(state.isHost && state.connected);
 }
 
@@ -1103,7 +1112,18 @@ function updatePresence(player) {
     joinedAt: existing?.joinedAt ?? player.joinedAt ?? nowTs(),
     lastSeenAt: nowTs()
   };
+  assignPlayerColors();
   renderAll();
+}
+
+function assignPlayerColors() {
+  const players = sortPlayerEntries(state.players);
+  players.forEach((player, index) => {
+    player.color = PLAYER_COLORS[index] || `hsl(${Math.round((index * 137.508) % 360)} 70% 50%)`;
+  });
+  if (state.localPlayer && state.players[state.localPlayer.id]) {
+    state.localPlayer.color = state.players[state.localPlayer.id].color;
+  }
 }
 
 function sendPresence() {
@@ -1438,6 +1458,7 @@ async function connect() {
     const resp = await fetch(
       `/api/negotiate?name=${encodeURIComponent(name)}&room=${encodeURIComponent(roomCode)}`
     );
+    if (resp.status === 409) throw new Error(translate("error.roomFull"));
     if (!resp.ok) throw new Error(translate("error.negotiate", { status: resp.status }));
     const data = await resp.json();
     if (!data.url || !data.playerId) throw new Error(translate("error.invalidNegotiate"));
@@ -1546,6 +1567,10 @@ function startGame() {
   const players = sortPlayerEntries(state.players).map((p) => p.id);
   if (players.length < 2) {
     addLog(translate("error.minPlayers"), "error");
+    return;
+  }
+  if (players.length > MAX_ROOM_PLAYERS) {
+    addLog(translate("error.roomFull"), "error");
     return;
   }
   state.game = initialGameFromPlayers(players);
