@@ -1,5 +1,9 @@
 # Crown of the Farlands
 
+<p align="center">
+  <img src=".agents/skills/assets/crown-of-the-farlands-logo.png" alt="Crown of the Farlands logo" width="900">
+</p>
+
 [![Tests](https://github.com/prombouts/riskonline/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/prombouts/riskonline/actions/workflows/test.yml)
 [![View pipeline runs](https://img.shields.io/badge/GitHub_Actions-view_pipeline_runs-2088FF?logo=githubactions&logoColor=white)](https://github.com/prombouts/riskonline/actions)
 [![View Azure deployment runs](https://img.shields.io/badge/Azure-view_deployment_runs-0078D4?logo=microsoftazure&logoColor=white)](https://github.com/prombouts/riskonline/actions/workflows/deploy-infra.yml)
@@ -7,6 +11,10 @@
 Een eenvoudige online strategiegame voor browser, mobiel en iPad, zonder persistente opslag.
 De multiplayer-sessie is tijdelijk en draait via **Azure Web PubSub** + **Azure Static Web Apps API**.
 Deze game is gemaakt met GitHub Copilot en GPT Luna 6.
+
+<p align="center">
+  <img src=".agents/skills/assets/crown-of-the-farlands-key-art.png" alt="Kaartillustratie van de Crown of the Farlands-wereld" width="100%">
+</p>
 
 ## Features
 

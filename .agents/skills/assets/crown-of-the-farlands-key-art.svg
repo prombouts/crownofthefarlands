@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Crown of the Farlands key art</title>
+  <desc id="desc">A richly textured cartographic sea map with a crown-shaped chain of far-off territories, navigational routes, and a glowing compass rose.</desc>
+  <defs>
+    <radialGradient id="ocean" cx="52%" cy="39%" r="76%">
+      <stop offset="0" stop-color="#28525b"/>
+      <stop offset=".56" stop-color="#183842"/>
+      <stop offset="1" stop-color="#0d222a"/>
+    </radialGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f0d899"/>
+      <stop offset=".45" stop-color="#d2a34e"/>
+      <stop offset="1" stop-color="#9d6d27"/>
+    </linearGradient>
+    <linearGradient id="sage" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#b3c2a3"/>
+      <stop offset="1" stop-color="#6e927b"/>
+    </linearGradient>
+    <linearGradient id="rust" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#df956a"/>
+      <stop offset="1" stop-color="#a65132"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#a6d0ca"/>
+      <stop offset="1" stop-color="#5d989d"/>
+    </linearGradient>
+    <filter id="paperGrain" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="4" seed="25" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0" result="gray"/>
+      <feComponentTransfer in="gray" result="texture"><feFuncA type="table" tableValues="0 .15"/></feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="texture" mode="multiply"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="15" stdDeviation="12" flood-color="#08191f" flood-opacity=".4"/>
+    </filter>
+    <pattern id="waves" width="150" height="100" patternUnits="userSpaceOnUse">
+      <path d="M-18 48 C10 29 39 29 67 48 S124 67 153 48" fill="none" stroke="#a8c6bf" stroke-opacity=".11" stroke-width="2"/>
+      <path d="M10 80 C38 61 67 61 95 80 S152 99 181 80" fill="none" stroke="#a8c6bf" stroke-opacity=".07" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#ocean)"/>
+  <rect width="1920" height="1080" fill="url(#waves)" opacity=".84"/>
+  <g opacity=".38" fill="none" stroke="#b7d0c4" stroke-width="2">
+    <path d="M-40 167 C210 90 317 250 579 168 S1010 86 1214 164 S1653 249 1990 109"/>
+    <path d="M-40 204 C228 127 329 283 590 205 S1020 123 1219 201 S1650 281 1990 143"/>
+    <path d="M-40 873 C201 791 376 922 596 846 S1012 760 1264 852 S1660 950 1990 848"/>
+    <path d="M-40 907 C202 826 376 954 596 880 S1020 794 1264 887 S1660 982 1990 881"/>
+  </g>
+
+  <!-- atmospheric routes behind the world -->
+  <g fill="none" stroke="#e9e2d0" stroke-linecap="round">
+    <path d="M250 610 C429 290 642 199 838 315 S1250 489 1530 221" stroke-width="4" stroke-dasharray="3 18" opacity=".62"/>
+    <path d="M302 762 C590 879 881 738 996 579 S1272 356 1650 507" stroke-width="3" stroke-dasharray="2 16" opacity=".48"/>
+    <path d="M439 309 C611 483 817 569 1013 485 S1277 253 1463 322" stroke-width="2" stroke-dasharray="2 13" opacity=".42"/>
+  </g>
+  <g fill="#f3dc94" filter="url(#glow)">
+    <circle cx="250" cy="610" r="8"/><circle cx="838" cy="315" r="8"/><circle cx="1530" cy="221" r="8"/>
+    <circle cx="302" cy="762" r="7"/><circle cx="996" cy="579" r="7"/><circle cx="1650" cy="507" r="7"/>
+  </g>
+
+  <!-- Crown-shaped northern continent chain -->
+  <g filter="url(#shadow)" stroke="#f4dfa4" stroke-opacity=".64" stroke-width="4" stroke-linejoin="round">
+    <path d="M160 375 C196 324 241 294 301 310 L355 330 C399 332 431 293 475 266 C530 232 578 253 605 287 L666 358 L628 436 C571 441 533 468 478 480 C406 496 341 466 291 438 C235 408 189 421 160 375Z" fill="url(#paper)"/>
+    <path d="M645 387 C693 330 750 283 806 302 C850 317 876 364 904 402 L871 489 C808 495 770 526 708 505 C667 491 631 436 645 387Z" fill="url(#sage)"/>
+    <path d="M910 315 C958 255 1011 223 1069 240 C1118 255 1146 306 1190 336 L1167 465 C1116 484 1066 500 1019 477 C969 454 931 419 902 379Z" fill="url(#rust)"/>
+    <path d="M1191 380 C1240 314 1308 280 1370 296 C1421 309 1456 358 1490 403 L1455 509 C1391 532 1336 517 1284 481 C1241 451 1214 423 1191 380Z" fill="url(#glass)"/>
+    <path d="M1480 344 C1538 305 1593 316 1642 355 C1682 386 1698 429 1735 458 L1701 535 C1642 543 1590 520 1547 489 C1495 453 1467 396 1480 344Z" fill="url(#paper)"/>
+  </g>
+
+  <!-- land contour lines -->
+  <g fill="none" stroke="#f7e8b7" stroke-opacity=".52" stroke-width="3" stroke-linecap="round">
+    <path d="M193 366 C259 331 328 389 386 347 S500 313 578 347"/>
+    <path d="M207 395 C274 360 335 418 397 376 S509 345 569 378"/>
+    <path d="M684 400 C736 372 781 425 846 392"/>
+    <path d="M685 427 C749 404 786 451 851 419"/>
+    <path d="M941 351 C1003 317 1047 397 1129 351"/>
+    <path d="M939 383 C1015 345 1058 425 1140 380"/>
+    <path d="M1226 402 C1302 357 1364 451 1455 397"/>
+    <path d="M1237 438 C1310 394 1374 484 1447 431"/>
+    <path d="M1514 387 C1571 354 1635 440 1706 407"/>
+    <path d="M1514 419 C1579 388 1639 471 1692 441"/>
+  </g>
+
+  <!-- Topographic mountain glyphs -->
+  <g fill="none" stroke="#805924" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".75">
+    <path d="M285 382 l40-65 36 65 31-42 43 57"/>
+    <path d="M738 420 l31-57 34 57 27-35 36 53"/>
+    <path d="M1009 396 l37-74 39 74 31-49 45 65"/>
+    <path d="M1304 442 l41-73 38 73 28-42 40 59"/>
+    <path d="M1585 430 l31-61 34 61 25-39 31 48"/>
+  </g>
+
+  <!-- Southern frontier territories -->
+  <g filter="url(#shadow)" stroke="#f4dfa4" stroke-opacity=".58" stroke-width="4" stroke-linejoin="round">
+    <path d="M339 728 C395 658 495 647 563 685 C609 711 632 775 657 829 C627 904 556 934 474 912 C403 892 347 843 326 783Z" fill="url(#rust)"/>
+    <path d="M772 740 C829 680 918 664 978 711 C1024 748 1052 812 1046 871 C997 932 909 956 831 923 C769 897 737 808 772 740Z" fill="url(#sage)"/>
+    <path d="M1196 728 C1265 676 1360 689 1411 745 C1452 789 1458 863 1433 917 C1363 949 1281 931 1222 892 C1178 849 1159 773 1196 728Z" fill="url(#paper)"/>
+  </g>
+  <g fill="none" stroke="#f7e8b7" stroke-opacity=".5" stroke-width="3">
+    <path d="M366 769 C438 720 548 751 624 810 M364 802 C446 754 548 788 620 845"/>
+    <path d="M797 775 C870 725 963 757 1025 820 M789 809 C870 760 965 788 1026 851"/>
+    <path d="M1218 776 C1292 729 1377 758 1430 817 M1204 814 C1283 770 1376 793 1434 850"/>
+  </g>
+
+  <!-- crown citadel / strategic focus -->
+  <g transform="translate(950 580)" filter="url(#shadow)">
+    <circle r="103" fill="#10252d" stroke="#d2a34e" stroke-width="8"/>
+    <circle r="84" fill="none" stroke="#e9e2d0" stroke-opacity=".6" stroke-width="3" stroke-dasharray="3 9"/>
+    <path d="M-57 27 L-45 -39 L-13 -5 L0 -70 L31 -5 L58 -39 L67 27 Z" fill="url(#paper)" stroke="#f6e3a6" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M-65 35 H70" stroke="#d2a34e" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="0" cy="3" r="9" fill="#183842" stroke="#f6e3a6" stroke-width="4"/>
+  </g>
+
+  <!-- hand-drawn map labeling -->
+  <g fill="#f2e4b8" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">
+    <text x="480" y="205" font-size="24" font-style="italic" letter-spacing="5" opacity=".84">KOBALTZEE</text>
+    <text x="1420" y="205" font-size="22" font-style="italic" letter-spacing="4" opacity=".76">DE VERRE STROOM</text>
+  </g>
+  <g fill="#193941" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700" font-style="italic" text-anchor="middle" letter-spacing="2" opacity=".86">
+    <text x="387" y="445">ZOUTRUG</text>
+    <text x="771" y="471">KOPERKUST</text>
+    <text x="1041" y="455">STOFPLATEAU</text>
+    <text x="1351" y="493">GLASSLAND</text>
+    <text x="1611" y="512">VERRE WESTEN</text>
+    <text x="491" y="873">ZUIDELIJKE DOORGANG</text>
+    <text x="909" y="893">ZUIDERLAND</text>
+    <text x="1311" y="889">EILAND</text>
+  </g>
+
+  <!-- Compass rose -->
+  <g transform="translate(1740 832)" filter="url(#shadow)">
+    <circle r="108" fill="#10252d" fill-opacity=".7" stroke="#d2a34e" stroke-width="4"/>
+    <circle r="91" fill="none" stroke="#e9e2d0" stroke-opacity=".56" stroke-width="2" stroke-dasharray="3 8"/>
+    <path d="M0-81 L21-12 L0 0 L-21-12Z" fill="#f2dd96"/>
+    <path d="M0 81 L21 12 L0 0 L-21 12Z" fill="#a65132"/>
+    <path d="M-81 0 L-12-21 L0 0 L-12 21Z" fill="#d2a34e"/>
+    <path d="M81 0 L12-21 L0 0 L12 21Z" fill="#d2a34e"/>
+    <circle r="11" fill="#f5e6ae" stroke="#183842" stroke-width="4"/>
+    <text x="0" y="-120" fill="#f2dd96" font-family="Georgia, serif" font-size="23" font-weight="700" text-anchor="middle">N</text>
+  </g>
+
+  <!-- border and vignette -->
+  <rect x="24" y="24" width="1872" height="1032" rx="10" fill="none" stroke="#d2a34e" stroke-opacity=".72" stroke-width="3"/>
+  <rect x="43" y="43" width="1834" height="994" rx="7" fill="none" stroke="#e9e2d0" stroke-opacity=".24" stroke-width="2" stroke-dasharray="4 10"/>
+  <rect width="1920" height="1080" fill="none" filter="url(#paperGrain)" opacity=".45"/>
+</svg>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="800" viewBox="0 0 2000 800" role="img" aria-labelledby="title desc">
+  <title id="title">Crown of the Farlands logo</title>
+  <desc id="desc">An antique-cartography crown, mountain ridge, and compass rose beside the Crown of the Farlands wordmark.</desc>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4dc96"/>
+      <stop offset="0.42" stop-color="#d2a34e"/>
+      <stop offset="1" stop-color="#9d6d27"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#214753"/>
+      <stop offset="1" stop-color="#10252d"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="13" stdDeviation="10" flood-color="#10252d" flood-opacity=".28"/>
+    </filter>
+    <filter id="grain" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="12" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0" result="gray"/>
+      <feComponentTransfer in="gray" result="subtle"><feFuncA type="table" tableValues="0 .09"/></feComponentTransfer>
+      <feBlend in="SourceGraphic" in2="subtle" mode="multiply"/>
+    </filter>
+  </defs>
+
+  <!-- Cartographic medallion -->
+  <g transform="translate(100 93)" filter="url(#softShadow)">
+    <circle cx="300" cy="300" r="282" fill="url(#sea)" stroke="url(#gold)" stroke-width="15"/>
+    <circle cx="300" cy="300" r="255" fill="none" stroke="#e9e2d0" stroke-opacity=".42" stroke-width="2" stroke-dasharray="3 12"/>
+    <circle cx="300" cy="300" r="222" fill="none" stroke="#d2a34e" stroke-opacity=".5" stroke-width="2"/>
+
+    <!-- compass cardinal ticks -->
+    <g fill="#e9e2d0" opacity=".84">
+      <path d="M300 55 l11 37 -11 23 -11-23z"/>
+      <path d="M300 545 l11-37 -11-23 -11 23z"/>
+      <path d="M55 300 l37-11 23 11 -23 11z"/>
+      <path d="M545 300 l-37-11 -23 11 23 11z"/>
+    </g>
+    <g fill="#d2a34e" opacity=".86">
+      <path d="M145 126 l7 26 -18 19 -14-24z"/>
+      <path d="M455 126 l-7 26 18 19 14-24z"/>
+      <path d="M145 474 l7-26 -18-19 -14 24z"/>
+      <path d="M455 474 l-7-26 18-19 14 24z"/>
+    </g>
+
+    <!-- crown-as-coastline -->
+    <path d="M127 370
+             C142 345 159 337 184 343
+             L212 351 L205 191 L288 276 L300 127 L377 276 L400 191 L412 351
+             L440 343 C465 337 482 345 497 370
+             L475 419 C440 413 397 432 371 446 C340 463 263 463 229 446
+             C203 432 160 413 125 419 Z" fill="url(#gold)" stroke="#f5e6ae" stroke-opacity=".72" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M142 370 C191 353 217 390 254 375 S323 352 353 382 S417 389 475 370" fill="none" stroke="#9a6a2a" stroke-width="5" stroke-linecap="round" opacity=".72"/>
+    <path d="M186 384 c16-25 27-25 43 0 c15-27 28-27 43 0 c16-25 29-25 45 0 c15-27 28-27 43 0 c16-25 27-25 43 0" fill="none" stroke="#f8e6aa" stroke-width="3" stroke-opacity=".6"/>
+    <path d="M211 351 L205 191 L288 276 L300 127 L377 276 L400 191 L412 351" fill="none" stroke="#9a6a2a" stroke-width="7" stroke-linejoin="round"/>
+    <circle cx="300" cy="307" r="22" fill="#183842" stroke="#f5e6ae" stroke-width="6"/>
+
+    <!-- coordinate lines -->
+    <path d="M93 449 C185 414 410 414 507 449 M98 168 C198 199 405 199 502 168" fill="none" stroke="#e9e2d0" stroke-width="2" stroke-opacity=".22"/>
+    <path d="M300 80 V520 M80 300 H520" stroke="#e9e2d0" stroke-width="2" stroke-opacity=".18"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(730 190)" filter="url(#grain)">
+    <text x="0" y="166" fill="#183842" font-family="Georgia, 'Times New Roman', serif" font-size="152" font-weight="700" letter-spacing="2">CROWN</text>
+    <g transform="translate(8 274)">
+      <path d="M0 0 H191" stroke="#d2a34e" stroke-width="4"/>
+      <path d="M570 0 H1120" stroke="#d2a34e" stroke-width="4"/>
+      <path d="M226 -10 l12 10 -12 10 -12-10z" fill="#d2a34e"/>
+      <text x="263" y="10" fill="#183842" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="8">OF THE</text>
+    </g>
+    <text x="0" y="410" fill="#183842" font-family="Georgia, 'Times New Roman', serif" font-size="104" font-weight="400" letter-spacing="1">FARLANDS</text>
+  </g>
+</svg>
