@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/prombouts/crownofthefarlands/compare/crown-of-the-farlands-v1.4.1...crown-of-the-farlands-v1.5.0) (2026-10-28)
+
+
+### Features
+
+* cap rooms at four distinct-colour players ([34a6c63](https://github.com/prombouts/crownofthefarlands/commit/34a6c63094910564da8d5117426c7c4a99ac5911))
+
 ## [1.4.1](https://github.com/prombouts/crownofthefarlands/compare/crown-of-the-farlands-v1.4.0...crown-of-the-farlands-v1.4.1) (2026-10-26)
 
 
